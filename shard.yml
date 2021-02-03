@@ -1,0 +1,13 @@
+name: armature
+version: 0.1.0
+
+authors:
+  - Jamie Gaskins <jgaskins@gmail.com>
+
+dependencies:
+  redis:
+    github: jgaskins/redis
+
+crystal: 0.36.0
+
+license: MIT
