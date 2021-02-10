@@ -202,7 +202,7 @@ module Armature
     class Response < IO
       @response : HTTP::Server::Response
 
-      delegate headers, read, status, :status=, to: @response
+      delegate headers, read, status, to: @response
 
       def initialize(@response)
       end
@@ -220,6 +220,10 @@ module Armature
       def json(**stuff)
         @response.headers["Content-Type"] = "application/json"
         stuff.to_json @response
+      end
+
+      def status=(status : HTTP::Status)
+        @response.status = status
       end
 
       def write(bytes : Bytes) : Nil
