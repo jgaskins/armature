@@ -207,8 +207,8 @@ module Armature
       def initialize(@response)
       end
 
-      def redirect(path)
-        @response.status = HTTP::Status::FOUND
+      def redirect(path, status : HTTP::Status = :found)
+        self.status = status
         @response.headers["Location"] = path
       end
 
