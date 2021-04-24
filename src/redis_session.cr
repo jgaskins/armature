@@ -15,13 +15,13 @@ module Armature
       def initialize(
         key : String,
         @redis = Redis::Client.new,
-        @expiration = 2.weeks,
+        @expiration = 2.weeks
       )
         super key
       end
 
       def call(context : HTTP::Server::Context)
-        context.session = Session.new(self, context)
+        context.session = Session.new(self, context.request.cookies)
 
         unless session_id = context.request.cookies[@key]?.try(&.value)
           session_id = UUID.random.to_s
@@ -45,7 +45,7 @@ module Armature
       def save(key : String, session : Session)
         return unless session.modified?
 
-        @redis.set key, session.json, ex: 2.weeks.total_seconds.to_i
+        @redis.set key, session.json, ex: @expiration
       end
 
       class Session < ::Armature::Session
@@ -93,10 +93,10 @@ module Armature
         end
 
         def data
-          if cookie = @context.request.cookies[@store.key]?
+          if cookie = @cookies[@store.key]?
             cookie.value ||= UUID.random.to_s
           else
-            cookie = @context.request.cookies[@store.key] = UUID.random.to_s
+            cookie = @cookies[@store.key] = UUID.random.to_s
           end
 
           redis_key = "#{@store.key}-#{cookie.value}"

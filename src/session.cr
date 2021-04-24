@@ -11,7 +11,7 @@ module Armature
   end
 
   abstract class Session
-    def initialize(@store : Store, @context : HTTP::Server::Context)
+    def initialize(@store : Store, @cookies : HTTP::Cookies)
     end
 
     abstract def [](key : String)
@@ -29,7 +29,7 @@ module Armature
   end
 
   class BlankSession < Session
-    def initialize(@store, @context)
+    def initialize(@store, @cookies)
     end
 
     def [](key)
@@ -63,7 +63,7 @@ module HTTP
       def session : Armature::Session
         @session ||= Armature::BlankSession.new(
           store: Armature::BlankSession::Store.new(""),
-          context: self,
+          cookies: self.request.cookies,
         )
       end
 
