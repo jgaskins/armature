@@ -21,9 +21,9 @@ module Armature
     module Helper
       extend self
 
-      macro form(method = nil, action = nil, response = "response", session = "session", **kwargs)
+      macro form(method = nil, action = nil, response = "response", session = "session", **kwargs, &block)
         {% kwargs = "NamedTuple.new".id if kwargs.empty? %}
-        ::Armature::Form.new(response: {{response.id}}, session: {{session.id}}).call(**{{kwargs}}, method: {{method}}, action: {{action}}) do
+        ::Armature::Form.new(response: {{response.id}}, session: {{session.id}}).call(**{{kwargs}}, method: {{method}}, action: {{action}}) do {% unless block.args.empty? %} |{{block.args.join(", ").id}}| {% end %}
           unless ({{method}} || "").upcase.in?({"GET", "HEAD", ""})
             {{response.id}} << %{<input type="hidden" name="_authenticity_token" value="#{authenticity_token_for({{session.id}})}"/>}
           end
