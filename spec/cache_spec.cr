@@ -5,6 +5,7 @@ require "uuid"
 
 redis = Redis::Client.new
 cache : Armature::Cache::CacheStore = Armature::Cache::RedisStore.new(redis)
+Armature.cache = cache
 
 describe Armature::Cache do
   it "returns nil when a key is missing" do
@@ -58,5 +59,17 @@ describe Armature::Cache do
     cache.delete key
 
     cache[key, as: String]?.should be_nil
+  end
+
+  it "caches data sent to an IO object" do
+    key = UUID.random.to_s
+    io = IO::Memory.new
+
+    Armature::Cache.cache(key, expires_in: 1.minute, io: io) do |cache|
+      cache << "hello"
+    end
+
+    io.to_s.should eq "hello"
+    cache[key, as: String]?.should eq "hello"
   end
 end

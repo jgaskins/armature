@@ -6,6 +6,7 @@ module Armature
   class_property! cache : Cache::CacheStore
 
   module Cache
+    LOG = ::Log.for(self)
     module CacheStore
       abstract def []?(key : String, as type : T.class) forall T
       abstract def []=(key : String, value : T) : Nil forall T
@@ -18,7 +19,7 @@ module Armature
       def initialize(
         @redis : Redis::Client,
         @default_expiration : Time::Span = 1.day,
-        @log = Log.for(self.class)
+        @log = Log.for("armature.cache")
       )
       end
 
@@ -55,7 +56,7 @@ module Armature
     extend self
 
     def cache(key : String, expires_in : Time::Span?, io : IO, & : IO ->)
-      if value = ::Armature.cache[key]?
+      if value = ::Armature.cache[key, as: String]?
         LOG.debug { "hit #{key.inspect}" }
         case value
         when String
