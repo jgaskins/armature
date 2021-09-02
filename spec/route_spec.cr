@@ -100,6 +100,25 @@ describe Armature::Route do
       end
     end.call make_context(method: "GET", path: "/top_level")
   end
+
+  it "treats a trailing slash as if it weren't there" do
+    path = nil
+
+    RouteTest.new do |r, response, session|
+      r.on "posts" do
+        r.on :id do |id|
+          r.root { raise "This is not the endpoint" }
+          r.on "comments" do
+            r.root do
+              r.get { path = "comments" }
+            end
+          end
+        end
+      end
+    end.call make_context(path: "posts/123/comments/")
+
+    path.should eq "comments"
+  end
 end
 
 private def make_context(method = "GET", path = "/", request_body = nil, request_headers = HTTP::Headers.new, response_headers = HTTP::Headers.new, response_body = nil)
