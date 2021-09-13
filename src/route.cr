@@ -2,13 +2,15 @@ require "http"
 require "json"
 require "ecr"
 
+require "./session"
+
 module Armature
   module Route
-    def route(context, &block : Request, Response ->)
+    def route(context, &block : Request, Response, Armature::Session ->)
       request = Request.new(context.request)
       response = Response.new(context.response)
 
-      yield request, response
+      yield request, response, context.session
     end
 
     macro render(template, to io = response)

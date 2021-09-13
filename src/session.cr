@@ -1,15 +1,6 @@
 require "http"
 
 module Armature
-  module Route
-    def route(context, &block : Request, Response, Session ->)
-      request = Request.new(context.request)
-      response = Response.new(context.response)
-
-      yield request, response, context.session
-    end
-  end
-
   abstract class Session
     def initialize(@store : Store, @cookies : HTTP::Cookies)
     end
