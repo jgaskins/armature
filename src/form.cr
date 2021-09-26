@@ -11,7 +11,14 @@ module Armature
       @response << %{ action="#{action}"} if action
       kwargs.each do |key, value|
         @response << ' ' << key << '='
-        value.to_s @response
+        case value
+        when String
+          value.inspect @response
+        when Nil
+          @response << %{""}
+        else
+          @response << '"' << value << '"'
+        end
       end
       @response << '>'
       yield
