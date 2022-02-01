@@ -1,7 +1,7 @@
 require "http"
 require "json"
-require "ecr"
 
+require "./template"
 require "./session"
 
 module Armature
@@ -14,7 +14,11 @@ module Armature
     end
 
     macro render(template, to io = response)
-      ECR.embed "views/{{template.id}}.ecr", {{io}}
+      ::Armature::Template.embed "views/{{template.id}}.ecr", {{io}}
+    end
+
+    def safe(value)
+      ::Armature::Template::HTML::SafeValue.new(value)
     end
 
     class Request
