@@ -53,6 +53,20 @@ describe Armature::Cache do
     invocations.should eq 1
   end
 
+  it "fetches many cache keys at once" do
+    prefix = UUID.random.to_s
+    keys = Array.new(3) { |i| "#{prefix}/#{i}" }
+
+    cache.write keys[0], "zero", expires_in: 10.seconds
+    cache.write keys[2], "two", expires_in: 10.seconds
+
+    cache.fetch_all(keys, as: String).should eq [
+      "zero",
+      nil,
+      "two",
+    ]
+  end
+
   it "deletes keys" do
     key = UUID.random.to_s
 
