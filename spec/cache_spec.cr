@@ -13,7 +13,7 @@ Armature.cache = cache
 describe Armature::Cache do
   it "returns nil when a key is missing" do
     key = UUID.random.to_s
-    cache[key, as: Nil]?.should eq nil
+    cache[key, as: String]?.should eq nil
   end
 
   it "returns the typecasted value when the key exists" do
