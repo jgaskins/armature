@@ -4,7 +4,10 @@ require "../src/cache"
 require "uuid"
 
 redis = Redis::Client.new
-cache : Armature::Cache::CacheStore = Armature::Cache::RedisStore.new(redis)
+cache : Armature::Cache::CacheStore = Armature::Cache::RedisStore.new(
+  redis: redis,
+  default_expiration: 10.seconds,
+)
 Armature.cache = cache
 
 describe Armature::Cache do
