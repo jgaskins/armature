@@ -168,7 +168,7 @@ module Armature::Template
 
           str << "#<loc:push>("
           append_loc(str, filename, line_number, column_number)
-          str << "::Armature::Template::HTML::SanitizableValue.new(#{string})"
+          str << "::Armature::Template::HTML::SanitizableValue.new((#{string}))"
           # HTML.escape string, str
           str << ")#<loc:pop>.to_s "
           str << buffer_name
