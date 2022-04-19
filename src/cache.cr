@@ -53,6 +53,8 @@ module Armature
       end
 
       def fetch_all(keys : Array(String), as type : T.class) : Array(T?) forall T
+        return [] of T? if keys.empty?
+
         @redis.mget(keys).as(Array).map do |value|
           if value
             T.from_msgpack value.as(String)
