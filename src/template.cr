@@ -168,8 +168,14 @@ module Armature::Template
 
           str << "#<loc:push>("
           append_loc(str, filename, line_number, column_number)
-          str << "::Armature::Template::HTML::SanitizableValue.new((#{string}))"
-          # HTML.escape string, str
+          # If they used <%== safe_content %>, we can just use that
+          if string.starts_with? '='
+            # Write all but the first byte to the buffer, but without allocating
+            # another string to do it.
+            str.write string.to_slice + 1
+          else
+            str << "::Armature::Template::HTML::SanitizableValue.new((" << string << "))"
+          end
           str << ")#<loc:pop>.to_s "
           str << buffer_name
           str << '\n'
