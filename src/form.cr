@@ -5,19 +5,18 @@ module Armature
     def initialize(@response : IO, @session : Armature::Session)
     end
 
-    def call(method : String? = nil, action : String? = nil, **kwargs)
+    def call(**kwargs : String)
       @response << "<form"
-      @response << %{ method="#{method}"} if method
-      @response << %{ action="#{action}"} if action
       kwargs.each do |key, value|
-        @response << ' ' << key << '='
-        case value
-        when String
-          value.inspect @response
-        when Nil
-          @response << %{""}
+        @response << ' '
+        HTML.escape key.to_s, @response
+        @response << '='
+        if value
+          @response << '"'
+          HTML.escape value, @response
+          @response << '"'
         else
-          @response << '"' << value << '"'
+          @response << %{""}
         end
       end
       @response << '>'
