@@ -36,24 +36,22 @@ module Armature
         @request.query_params
       end
 
-      def form_params
-        @form_params ||= begin
-          if body = @request.body
-            case headers["Content-Type"]?
-            when /multipart/
-              params = URI::Params.new
-              HTTP::FormData.parse @request do |part|
-                params[part.name] = part.body.gets_to_end
-              end
-              params
-            when /url/
-              URI::Params.parse body.gets_to_end
-            else
-              URI::Params.new
+      getter form_params : URI::Params do
+        if body = @request.body
+          case headers["Content-Type"]?
+          when .includes? "multipart"
+            params = URI::Params.new
+            HTTP::FormData.parse @request do |part|
+              params[part.name] = part.body.gets_to_end
             end
+            params
+          when .includes? "url"
+            URI::Params.parse body.gets_to_end
           else
             URI::Params.new
           end
+        else
+          URI::Params.new
         end
       end
 
