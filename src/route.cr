@@ -269,8 +269,8 @@ module Armature
         @response.status = status
       end
 
-      def write(bytes : Bytes) : Nil
-        @response.write bytes
+      def write(slice : Bytes) : Nil
+        @response.write slice
       end
 
       def output
