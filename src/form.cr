@@ -5,13 +5,13 @@ module Armature
     def initialize(@response : IO, @session : Armature::Session)
     end
 
-    def call(**kwargs : String)
+    def call(**kwargs : String?)
       @response << "<form"
       kwargs.each do |key, value|
-        @response << ' '
-        HTML.escape key.to_s, @response
-        @response << '='
-        if value
+        if value = value.presence
+          @response << ' '
+          HTML.escape key.to_s, @response
+          @response << '='
           @response << '"'
           HTML.escape value, @response
           @response << '"'
@@ -27,10 +27,10 @@ module Armature
     module Helper
       extend self
 
-      macro form(method = nil, action = nil, response = "response", session = "session", **kwargs, &block)
+      macro form(response = "response", session = "session", **kwargs, &block)
         {% kwargs = "NamedTuple.new".id if kwargs.empty? %}
-        ::Armature::Form.new(response: {{response.id}}, session: {{session.id}}).call(**{{kwargs}}, method: {{method}}, action: {{action}}) do {% unless block.args.empty? %} |{{block.args.join(", ").id}}| {% end %}
-          unless ({{method}} || "").upcase.in?({"GET", "HEAD", ""})
+        ::Armature::Form.new(response: {{response.id}}, session: {{session.id}}).call(**{{kwargs}}) do {% unless block.args.empty? %} |{{block.args.join(", ").id}}| {% end %}
+          unless ({{kwargs[:method]}} || "").upcase.in?({"GET", "HEAD", ""})
             {{response.id}} << %{<input type="hidden" name="_authenticity_token" value="#{authenticity_token_for({{session.id}})}"/>}
           end
           {{yield}}

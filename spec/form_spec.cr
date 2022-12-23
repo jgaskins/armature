@@ -21,7 +21,7 @@ end
 struct FormTestRoute
   include Armature::Form::Helper
 
-  def initialize(@method : String = "POST", @action = "/")
+  def initialize(@method : String? = nil, @action : String? = nil)
   end
 
   def call(response, session)
@@ -29,6 +29,7 @@ struct FormTestRoute
     # to specify an authenticity token, the method must not be GET/HEAD
     form method: @method, action: @action, "data-foo": "bar" do
       # ...
+      response << "<input name=lol>"
     end
 
     XML.parse_html response.rewind
@@ -82,7 +83,7 @@ describe Armature::Form do
   it "adds an authenticity token to the form" do
     response, session = make_response_and_session
 
-    html = FormTestRoute.new.call response, session
+    html = FormTestRoute.new("POST", "/").call response, session
 
     if node = html.xpath_node("//input[@name='_authenticity_token']")
       valid_token = Armature::Form::Helper.valid_authenticity_token?(
