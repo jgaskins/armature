@@ -39,6 +39,8 @@ module Armature
       getter form_params : URI::Params do
         if body = @request.body
           case headers["Content-Type"]?
+          when Nil
+            URI::Params.new
           when .includes? "multipart"
             params = URI::Params.new
             HTTP::FormData.parse @request do |part|
