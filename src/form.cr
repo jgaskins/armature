@@ -44,8 +44,7 @@ module Armature
         if csrf = session["csrf"]?.try(&.as_s?)
           csrf = Base64.decode csrf
         else
-          csrf = Random::Secure.random_bytes(32)
-          session["csrf"] = Base64.strict_encode(csrf)
+          csrf = generate_authenticity_token!(session)
         end
 
         csrf.each_with_index do |byte, index|
@@ -56,23 +55,32 @@ module Armature
         Base64.strict_encode token
       end
 
+      def generate_authenticity_token!(session)
+        csrf = Random::Secure.random_bytes(32)
+        session["csrf"] = Base64.strict_encode(csrf)
+        csrf
+      end
+
       def valid_authenticity_token?(form_params : URI::Params, session)
         return false unless token = form_params["_authenticity_token"]?
         if csrf = session["csrf"]?.try(&.as_s?)
           csrf = Base64.decode csrf
+          return false if csrf.size != 32
         else
           return false
         end
 
         token = Base64.decode(token)
+        return false if token.size != 64
+
         pad = token[0...32]
         challenge = token[32...64]
+
         challenge.each_with_index do |byte, index|
           challenge[index] = byte ^ pad[index]
         end
+
         challenge == csrf
-      rescue ex : IndexError
-        false
       end
     end
   end
