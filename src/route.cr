@@ -7,8 +7,8 @@ require "./session"
 module Armature
   module Route
     def route(context, &block : Request, Response, Armature::Session ->)
-      request = Request.new(context.request)
       response = Response.new(context.response)
+      request = Request.new(context.request, response: response, session: context.session)
 
       yield request, response, context.session
     end
@@ -22,11 +22,13 @@ module Armature
     end
 
     class Request
-      delegate headers, path, :headers=, body, method, original_path, to: @request
+      delegate headers, path, :headers=, cookies, body, method, original_path, to: @request
 
+      getter response : Response
+      getter session : Session
       @handled = false
 
-      def initialize(@request : HTTP::Request)
+      def initialize(@request : HTTP::Request, @response, @session)
         @request.original_path = @request.@original_path || @request.path
       end
 
