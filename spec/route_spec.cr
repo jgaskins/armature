@@ -1,4 +1,5 @@
 require "./spec_helper"
+require "uuid"
 
 require "../src/route"
 require "../src/session"
@@ -12,6 +13,17 @@ class RouteTest
   def call(context)
     route context do |r, response, session|
       @route.call r, response, session
+    end
+  end
+
+  struct CaseInsensitive
+    def initialize(@match : String)
+    end
+
+    def ===(segment : String)
+      if @match.compare(segment, case_insensitive: true) == 0
+        segment
+      end
     end
   end
 end
@@ -66,6 +78,43 @@ describe Armature::Route do
     end.call make_context(path: "/foo/bar")
 
     match.should eq "bar"
+  end
+
+  it "matches requests to dynamic routes with types" do
+    match = nil
+
+    route = RouteTest.new do |r, response, session|
+      r.on "foo" do
+        r.on id: Int64 do |id|
+          match = id
+        end
+        r.on id: UUID do |id|
+          match = id
+        end
+        r.on id: /@(\w+)/ do |id|
+          match = id
+        end
+        r.on foo: RouteTest::CaseInsensitive.new("hello") do |id|
+          match = id
+        end
+      end
+    end
+
+    route.call make_context(path: "/foo/123")
+    match.should be_a Int64
+
+    route.call make_context(path: "/foo/#{UUID.random}")
+    match.should be_a UUID
+
+    route.call make_context(path: "/foo/@jamie")
+    match.should be_a Regex::MatchData
+    match.as(Regex::MatchData)[1].should eq "jamie"
+
+    route.call make_context(path: "/foo/hello")
+    match.should eq "hello"
+
+    route.call make_context(path: "/foo/HELLO")
+    match.should eq "HELLO"
   end
 
   it "matches request methods" do

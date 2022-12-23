@@ -163,6 +163,43 @@ module Armature
         end
       end
 
+
+      def on(**capture)
+        return if handled?
+
+        old_path = @request.path
+        capture.each do |key, value|
+          if (match = %r(\A/?[^/]+).match @request.path.sub(%r(\A/), "")) && (result = match?(match[0], value))
+            @request.path = @request.path.sub(%r(\A/#{match[0]}), "")
+            yield result
+          end
+        end
+      ensure
+        if old_path
+          @request.path = old_path
+        end
+      end
+
+      def match?(segment : String, matcher)
+        matcher === segment
+      end
+
+      {% for type in %w[Int UInt] %}
+        {% for size in %w[8 16 32 64 128] %}
+          def match?(segment : String, matcher : {{type.id}}{{size.id}}.class)
+            segment.to_{{type[0..0].downcase.id}}{{size.id}}?
+          end
+        {% end %}
+      {% end %}
+
+      def match?(segment : String, matcher : UUID.class)
+        UUID.parse? segment
+      end
+
+      def match?(segment : String, matcher : Regex)
+        matcher.match segment
+      end
+
       def params(*params)
         return if handled?
         return if !params.all? { |param| @request.query_params.has_key? param }
