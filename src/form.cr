@@ -41,7 +41,7 @@ module Armature
         token = Bytes.new(64)
         padded = token + 32
         one_time_pad = Random::Secure.random_bytes(32)
-        if csrf = session["csrf"]?.try(&.as_s?)
+        if csrf = unwrap_session_value(session["csrf"]?)
           csrf = Base64.decode csrf
         else
           csrf = generate_authenticity_token!(session)
@@ -63,7 +63,7 @@ module Armature
 
       def valid_authenticity_token?(form_params : URI::Params, session)
         return false unless token = form_params["_authenticity_token"]?
-        if csrf = session["csrf"]?.try(&.as_s?)
+        if csrf = unwrap_session_value(session["csrf"]?)
           csrf = Base64.decode csrf
           return false if csrf.size != 32
         else
@@ -81,6 +81,15 @@ module Armature
         end
 
         challenge == csrf
+      end
+
+      def unwrap_session_value(value)
+        # Handle types like JSON::Any and MessagePack::Any that respond to `.as_s?`
+        if value.responds_to? :as_s?
+          value.as_s?
+        else
+          value
+        end
       end
     end
   end
