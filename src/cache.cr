@@ -65,9 +65,9 @@ module Armature
 
     extend self
 
-    def cache(key : String, expires_in : Time::Span?, io : IO, & : IO ->)
+    def cache(key : String, expires_in : Time::Span?, io : IO, & : IO ->) : Nil
       if value = ::Armature.cache[key, as: String]?
-        LOG.debug { "hit #{key.inspect}" }
+        LOG.debug &.emit "hit", key: key
         case value
         when String
           io << value
@@ -75,12 +75,12 @@ module Armature
           io.write value
         end
       else
-        LOG.debug { "miss #{key.inspect}" }
+        LOG.debug &.emit "miss", key: key
         buffer = IO::Memory.new
-        yield buffer
-        LOG.debug { "caching #{key.inspect}: #{buffer.rewind}" }
-        ::Armature.cache.write key, buffer.rewind.to_s, expires_in: expires_in
-        IO.copy buffer.rewind, io
+        writer = IO::MultiWriter.new(io, buffer)
+        yield writer.as(IO)
+        LOG.debug &.emit "writing", key: key, entry_size: buffer.bytesize
+        ::Armature.cache.write key, buffer.to_s, expires_in: expires_in
       end
     end
 
