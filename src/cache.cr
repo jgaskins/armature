@@ -1,64 +1,36 @@
 require "msgpack"
 require "log"
-require "redis"
 
 module Armature
   class_property! cache : Cache::CacheStore
 
   module Cache
     LOG = ::Log.for(self)
+
     module CacheStore
       abstract def []?(key : String, as type : T.class) forall T
-      abstract def []=(key : String, value : T) : Nil forall T
       abstract def delete(key : String) : Nil
-    end
-
-    class RedisStore
-      include CacheStore
-
-      def initialize(
-        @redis : Redis::Client,
-        @default_expiration : Time::Span = 1.day,
-        @log = Log.for("armature.cache")
-      )
-      end
-
-      def []?(key : String, as type : T.class) : T? forall T
-        if value = @redis.get(key)
-          T.from_msgpack value
-        end
-      end
+      abstract def write(key : String, value : T, expires_in : Time::Span?) forall T
 
       def []=(key : String, value : T) : Nil forall T
         write key, value, expires_in: @default_expiration
       end
 
-      def delete(key : String) : Nil
-        @redis.del key
-      end
-
-      def write(key : String, value : T, expires_in duration : Time::Span?) forall T
-        string = String.build { |str| value.to_msgpack str }
-        @redis.set key, string, ex: duration
-      end
-
       def fetch(key : String, expires_in duration : Time::Span?, & : -> T) forall T
-        if value = self[key, as: T]?
+        begin
+          value = self[key, as: T]?
+        rescue
+          # If we can't get the value from the cache, the cache server is likely
+          # down so we just go ahead yield the block.
+          return yield
+        end
+
+        if value
           value
         else
           value = yield
           write key, value, expires_in: duration
           value
-        end
-      end
-
-      def fetch_all(keys : Array(String), as type : T.class) : Array(T?) forall T
-        return [] of T? if keys.empty?
-
-        @redis.mget(keys).as(Array).map do |value|
-          if value
-            T.from_msgpack value.as(String)
-          end
         end
       end
     end
