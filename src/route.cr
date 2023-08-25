@@ -7,8 +7,8 @@ require "./session"
 module Armature
   module Route
     def route(context, &block : Request, Response, Armature::Session ->)
-      response = Response.new(context.response)
-      request = Request.new(context.request, response: response, session: context.session)
+      response = Response.new(context)
+      request = Request.new(context)
 
       yield request, response, context.session
     end
@@ -22,39 +22,22 @@ module Armature
     end
 
     class Request
-      delegate headers, path, :headers=, cookies, body, method, original_path, to: @request
+      delegate headers, path, :headers=, cookies, body, method, original_path, to: original_request
 
-      getter response : Response
-      getter session : Session
-      @handled = false
+      getter context : HTTP::Server::Context
+      getter original_request : HTTP::Request { context.request }
+      getter response : Response { context.armature_response }
+      getter session : Session { context.session }
 
-      def initialize(@request : HTTP::Request, @response, @session)
-        @request.original_path = @request.@original_path || @request.path
+      def initialize(@context)
       end
 
       def params
-        @request.query_params
+        original_request.query_params
       end
 
-      getter form_params : URI::Params do
-        if body = @request.body
-          case headers["Content-Type"]?
-          when Nil
-            URI::Params.new
-          when .includes? "multipart"
-            params = URI::Params.new
-            HTTP::FormData.parse @request do |part|
-              params[part.name] = part.body.gets_to_end
-            end
-            params
-          when .includes? "url"
-            URI::Params.parse body.gets_to_end
-          else
-            URI::Params.new
-          end
-        else
-          URI::Params.new
-        end
+      def form_params
+        context.armature_form_params
       end
 
       def root
@@ -69,7 +52,7 @@ module Armature
           def {{method.id.downcase}}
             return if handled?
 
-            if @request.method == {{method.stringify.upcase}}
+            if original_request.method == {{method.stringify.upcase}}
               begin
                 yield
               ensure
@@ -94,11 +77,11 @@ module Armature
         return if handled?
 
         check_path = path.sub(%r(\A/), "")
-        actual = @request.path.sub(%r(\A/), "")
+        actual = original_request.path.sub(%r(\A/), "")
 
-        old_path = @request.path
+        old_path = original_request.path
         if check_path == actual
-          @request.path = ""
+          original_request.path = ""
           begin
             yield
           ensure
@@ -106,16 +89,16 @@ module Armature
           end
         end
       ensure
-        @request.path = old_path if old_path
+        original_request.path = old_path if old_path
       end
 
       def is(path : Symbol)
         return if handled?
 
-        old_path = @request.path
-        match = %r(\A/?[^/]+\z).match @request.path.sub(%r(\A/), "")
+        old_path = original_request.path
+        match = %r(\A/?[^/]+\z).match original_request.path.sub(%r(\A/), "")
         if match
-          @request.path = @request.path.sub(%r(\A/#{match[0]}), "")
+          original_request.path = original_request.path.sub(%r(\A/#{match[0]}), "")
 
           begin
             yield match[0]
@@ -125,7 +108,7 @@ module Armature
         end
       ensure
         if old_path
-          @request.path = old_path
+          original_request.path = old_path
         end
       end
 
@@ -140,11 +123,11 @@ module Armature
 
         if match?(path)
           begin
-            old_path = @request.path
-            @request.path = @request.path.sub(/\A\/?#{path}/, "")
+            old_path = original_request.path
+            original_request.path = original_request.path.sub(/\A\/?#{path}/, "")
             yield
           ensure
-            @request.path = old_path.not_nil!
+            original_request.path = old_path.not_nil!
           end
         end
       end
@@ -152,33 +135,32 @@ module Armature
       def on(capture : Symbol)
         return if handled?
 
-        old_path = @request.path
-        match = %r(\A/?[^/]+).match @request.path.sub(%r(\A/), "")
+        old_path = original_request.path
+        match = %r(\A/?[^/]+).match original_request.path.sub(%r(\A/), "")
         if match
-          @request.path = @request.path.sub(%r(\A/#{match[0]}), "")
+          original_request.path = original_request.path.sub(%r(\A/#{match[0]}), "")
 
           yield match[0]
         end
       ensure
         if old_path
-          @request.path = old_path
+          original_request.path = old_path
         end
       end
-
 
       def on(**capture)
         return if handled?
 
-        old_path = @request.path
+        old_path = original_request.path
         capture.each do |key, value|
-          if (match = %r(\A/?[^/]+).match @request.path.sub(%r(\A/), "")) && (result = match?(match[0], value))
-            @request.path = @request.path.sub(%r(\A/#{match[0]}), "")
+          if (match = %r(\A/?[^/]+).match original_request.path.sub(%r(\A/), "")) && (result = match?(match[0], value))
+            original_request.path = original_request.path.sub(%r(\A/#{match[0]}), "")
             yield result
           end
         end
       ensure
         if old_path
-          @request.path = old_path
+          original_request.path = old_path
         end
       end
 
@@ -204,10 +186,10 @@ module Armature
 
       def params(*params)
         return if handled?
-        return if !params.all? { |param| @request.query_params.has_key? param }
+        return if !params.all? { |param| original_request.query_params.has_key? param }
 
         begin
-          yield params.map { |key| @request.query_params[key] }
+          yield params.map { |key| original_request.query_params[key] }
         ensure
           handled!
         end
@@ -228,19 +210,19 @@ module Armature
       end
 
       def url : URI
-        @uri ||= URI.parse("https://#{@request.host_with_port}/#{@request.path}")
+        @uri ||= URI.parse("https://#{original_request.host_with_port}/#{original_request.path}")
       end
 
       private def match?(path : String)
-        @request.path.starts_with?(path) || @request.path.starts_with?("/#{path}")
+        original_request.path.starts_with?(path) || original_request.path.starts_with?("/#{path}")
       end
 
       def handled?
-        @request.handled?
+        context.handled?
       end
 
       def handled!
-        @request.handled!
+        context.handled!
       end
     end
 
@@ -248,6 +230,10 @@ module Armature
       @response : HTTP::Server::Response
 
       delegate headers, read, status, to: @response
+
+      def self.new(context : HTTP::Server::Context)
+        new context.response
+      end
 
       def initialize(@response)
       end
@@ -289,14 +275,40 @@ module Armature
 end
 
 module HTTP
-  class Request
+  class Server::Context
     # We mutate the request path as we traverse the routing tree so we need to
     # be able to know the original path.
-    property! original_path : String
+    property! original_request_path : String
     getter? handled = false
+
+    def initialize(request, response)
+      previous_def
+      @original_request_path = request.path
+    end
 
     def handled!
       @handled = true
+    end
+
+    getter armature_form_params : URI::Params do
+      if body = request.body
+        case request.headers["Content-Type"]?
+        when Nil
+          URI::Params.new
+        when .includes? "multipart"
+          params = URI::Params.new
+          HTTP::FormData.parse request do |part|
+            params[part.name] = part.body.gets_to_end
+          end
+          params
+        when .includes? "url"
+          URI::Params.parse body.gets_to_end
+        else
+          URI::Params.new
+        end
+      else
+        URI::Params.new
+      end
     end
   end
 end
