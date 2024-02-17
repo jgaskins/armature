@@ -1,4 +1,4 @@
-require "ecr"
+require "./template"
 
 module Armature
   abstract struct Component
