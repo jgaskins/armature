@@ -9,6 +9,8 @@ module Armature
 
     abstract def []=(key : String, value : String)
 
+    abstract def delete(key : String)
+
     abstract class Store
       include HTTP::Handler
 
