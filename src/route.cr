@@ -43,7 +43,6 @@ module Armature
       def root
         return if handled?
 
-        is("/") { yield }
         is("") { yield }
       end
 
@@ -73,35 +72,22 @@ module Armature
 
       handle_method get, post, put, patch, delete
 
-      def is(path : String = "")
+      def is(*segments)
         return if handled?
 
-        check_path = path.sub(%r(\A/), "")
-        actual = original_request.path.sub(%r(\A/), "")
-
         old_path = original_request.path
-        if check_path == actual
-          original_request.path = ""
-          begin
-            yield
-          ensure
-            handled!
+        captures = segments.map do |matcher|
+          if (match = %r(\A/?[^/]*).match original_request.path.sub(%r(\A/), "")) && (result = match?(match[0], matcher))
+            original_request.path = original_request.path.sub(%r(\A/?#{match[0]}), "")
+            result
+          else
+            break nil
           end
         end
-      ensure
-        original_request.path = old_path if old_path
-      end
 
-      def is(path : Symbol)
-        return if handled?
-
-        old_path = original_request.path
-        match = %r(\A/?[^/]+\z).match original_request.path.sub(%r(\A/), "")
-        if match
-          original_request.path = original_request.path.sub(%r(\A/#{match[0]}), "")
-
+        if captures || segments.empty?
           begin
-            yield match[0]
+            captures ? yield *captures : yield
           ensure
             handled!
           end
@@ -112,55 +98,29 @@ module Armature
         end
       end
 
-      def on(*paths : String)
-        paths.each do |path|
-          on(path) { yield }
-        end
-      end
-
-      def on(path : String)
-        return if handled?
-
-        if match?(path)
-          begin
-            old_path = original_request.path
-            original_request.path = original_request.path.sub(/\A\/?#{path}/, "")
-            yield
-          ensure
-            original_request.path = old_path.not_nil!
-          end
-        end
-      end
-
-      def on(capture : Symbol)
+      def on(*segments)
         return if handled?
 
         old_path = original_request.path
-        match = %r(\A/?[^/]+).match original_request.path.sub(%r(\A/), "")
-        if match
-          original_request.path = original_request.path.sub(%r(\A/#{match[0]}), "")
-
-          yield match[0]
+        captures = segments.map do |matcher|
+          if (match = %r(\A/?[^/]+).match original_request.path.sub(%r(\A/), "")) && (result = match?(match[0], matcher))
+            original_request.path = original_request.path.sub(%r(\A/?#{match[0]}), "")
+            result
+          else
+            break nil
+          end
         end
+
+        yield *captures if captures
       ensure
         if old_path
           original_request.path = old_path
         end
       end
 
-      def on(**capture)
-        return if handled?
-
-        old_path = original_request.path
-        capture.each do |key, value|
-          if (match = %r(\A/?[^/]+).match original_request.path.sub(%r(\A/), "")) && (result = match?(match[0], value))
-            original_request.path = original_request.path.sub(%r(\A/#{match[0]}), "")
-            yield result
-          end
-        end
-      ensure
-        if old_path
-          original_request.path = old_path
+      def on(**segments)
+        on *segments.values do |*args|
+          yield *args
         end
       end
 
@@ -175,6 +135,10 @@ module Armature
           end
         {% end %}
       {% end %}
+
+      def match?(segment : String, matcher : Symbol)
+        segment
+      end
 
       def match?(segment : String, matcher : UUID.class)
         UUID.parse? segment
