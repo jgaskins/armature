@@ -22,7 +22,7 @@ module Armature
     end
 
     class Request
-      delegate headers, path, :headers=, cookies, body, method, original_path, to: original_request
+      delegate headers, path, :headers=, cookies, body, method, to: original_request
 
       getter context : HTTP::Server::Context
       getter original_request : HTTP::Request { context.request }
@@ -38,6 +38,10 @@ module Armature
 
       def form_params
         context.armature_form_params
+      end
+
+      def original_path
+        context.original_request_path
       end
 
       def root
