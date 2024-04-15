@@ -68,6 +68,25 @@ describe Armature::Route do
     handled.should eq true
   end
 
+  it "matches requests to routes with multiple args" do
+    handled = false
+    count = 0
+
+    RouteTest.new do |r, response, session|
+      # We need to be a bit more explicit about this, as previous
+      # versions of `on` interpreted multiple args as "any of".
+      r.on "outer", "inner" do
+        count += 1
+        r.is "last" do
+          handled = true
+        end
+      end
+    end.call make_context(path: "/outer/inner/last")
+
+    handled.should eq true
+    count.should eq 1
+  end
+
   it "matches requests to dynamic routes using symbols" do
     match = nil
 
@@ -81,6 +100,27 @@ describe Armature::Route do
   end
 
   it "matches requests to dynamic routes with types" do
+    match = nil
+
+    route = RouteTest.new do |r, response, session|
+      r.on "foo" do
+        r.on id: Int64 do |id|
+          match = id
+        end
+        r.on id: UUID do |id|
+          match = id
+        end
+        r.on id: /@(\w+)/ do |id|
+          match = id
+        end
+        r.on foo: RouteTest::CaseInsensitive.new("hello") do |id|
+          match = id
+        end
+      end
+    end
+  end
+
+  it "matches requests to dynamic routes with named types" do
     match = nil
 
     route = RouteTest.new do |r, response, session|
@@ -115,6 +155,25 @@ describe Armature::Route do
 
     route.call make_context(path: "/foo/HELLO")
     match.should eq "HELLO"
+  end
+
+  it "matches requests to dynamic routes with multiple typed args" do
+    handled = false
+    count = 0
+
+    RouteTest.new do |r, response, session|
+      # We need to be a bit more explicit about this, as previous
+      # versions of `on` interpreted multiple args as "any of".
+      r.on Int64, :thing do |int, thing|
+        count += 1
+        int.should be_a Int64
+        int.should eq 64
+        thing.should be_a String
+        thing.should eq "string"
+      end
+    end.call make_context(path: "/64/string")
+
+    count.should eq 1
   end
 
   it "matches request methods" do
@@ -174,11 +233,11 @@ private def make_context(method = "GET", path = "/", request_body = nil, request
   response_io = IO::Memory.new
   context = HTTP::Server::Context.new(
     request: HTTP::Request.new(
-      method: method,
-      resource: path,
-      body: request_body,
-      headers: request_headers,
-    ),
+    method: method,
+    resource: path,
+    body: request_body,
+    headers: request_headers,
+  ),
     response: HTTP::Server::Response.new(response_io),
   )
 
