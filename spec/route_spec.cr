@@ -209,6 +209,27 @@ describe Armature::Route do
     end.call make_context(method: "GET", path: "/top_level")
   end
 
+  it "matches arguments to `is`" do
+    # Spec expectations are inside the app
+    RouteTest.new do |r, response, session|
+      r.root { raise "This is not a request for '/'" }
+      r.handled?.should eq false
+
+      r.on "top_level" do
+        # `on` does not mark a request as handled
+        r.handled?.should eq false
+
+        # `is` does mark a request as handled
+        r.is String, Int64 do |arg, arg2|
+          arg.should eq "test"
+          arg2.should eq 321
+        end
+
+        r.handled?.should eq true
+      end
+    end.call make_context(method: "GET", path: "/top_level/test/321")
+  end
+
   it "treats a trailing slash as if it weren't there" do
     path = nil
 
