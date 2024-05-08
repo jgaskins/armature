@@ -76,6 +76,21 @@ module Armature
 
       handle_method get, post, put, patch, delete
 
+      def is
+        return if handled?
+
+        old_path = original_request.path
+        begin
+          yield
+        ensure
+          handled!
+        end
+      ensure
+        if old_path
+          original_request.path = old_path
+        end
+      end
+
       def is(*segments)
         return if handled?
 
@@ -89,9 +104,9 @@ module Armature
           end
         end
 
-        if captures || segments.empty?
+        if captures
           begin
-            captures ? yield *captures : yield
+            yield *captures
           ensure
             handled!
           end
@@ -140,7 +155,7 @@ module Armature
         {% end %}
       {% end %}
 
-      def match?(segment : String, matcher : Symbol)
+      def match?(segment : String, matcher : Symbol | String.class)
         segment
       end
 
