@@ -13,6 +13,155 @@ module Armature
       yield request, response, context.session
     end
 
+    # Scaffold a full set of REST-style handlers that map to route methods. The mapping is:
+    #
+    # - `GET /` -> `index`
+    # - `GET /new` -> `new`
+    # - `POST /` -> `create`
+    # - `GET /:id` -> `show(resource)`
+    # - `GET /:id/edit` -> `edit(resource)`
+    # - `PUT /:id` -> `update(resource)`
+    # - `DELETE /:id` -> `destroy(resource)`
+    #
+    # ```
+    # struct Posts
+    #   include Armature::Route
+    #
+    #   scaffold id: UUID do |id|
+    #     PostQuery.new.find(id)
+    #   end
+    #
+    #   def new
+    #     render "posts/new"
+    #   end
+    #
+    #   def create
+    #   end
+    #
+    #   def show(post : Post)
+    #     render "posts/show"
+    #   end
+    # end
+    # ```
+    @[Experimental("Route scaffolding is not yet stabilized")]
+    macro scaffold(*, id id_type = String)
+      getter! context : HTTP::Server::Context
+      getter request : Armature::Route::Request do
+        Request.new context
+      end
+      getter response : Armature::Route::Response do
+        Response.new context
+      end
+      getter session : Armature::Session do
+        context.session
+      end
+      getter! id : {{id_type}}
+
+      def call(context)
+        route context do |r, response, session|
+          @context = context
+
+          r.root do
+            r.get do
+              index
+            end
+
+            r.post do
+              check_csrf_token { create }
+            end
+          end
+
+          r.get "new" { new }
+
+          r.on id: {{id_type}} do |id|
+            if resource = {{yield}}
+              r.root do
+                r.get { show resource }
+                r.put { check_csrf_token { update resource } }
+                r.delete { check_csrf_token { destroy resource } }
+              end
+
+              r.get "edit" { edit resource }
+            end
+          end
+        end
+      end
+
+      def check_csrf_token(params_type : ParamType = default_params_type)
+        params = case params_type
+                 in .query?
+                   r.params
+                 in .form?
+                   r.form_params
+                 in .multipart_form_data?
+                   response.status = :unprocessable_entity
+                   response << "This endpoint doesn't support multipart data"
+                   return
+                 end
+
+        if valid_authenticity_token?(params, session)
+          yield
+        else
+          response.status = :bad_request
+        end
+      end
+
+      def default_params_type : ParamType
+        case r.headers["content-type"]?
+        when nil
+          ParamType::Query
+        when .includes? "form"
+          ParamType::Form
+        when .includes? "multipart/form-data"
+          ParamType::MultipartFormData
+        else
+          ParamType::Query
+        end
+      end
+
+      enum ParamType
+        Query
+        Form
+        MultipartFormData
+      end
+
+      def r
+        request
+      end
+
+      def index
+        not_found!
+      end
+
+      def show(resource)
+        not_found!
+      end
+
+      def new
+        not_found!
+      end
+
+      def create
+        not_found!
+      end
+
+      def edit(resource)
+        not_found!
+      end
+
+      def update(resource)
+        not_found!
+      end
+
+      def destroy(resource)
+        not_found!
+      end
+
+      private def not_found!
+        response.status = :not_found
+      end
+    end
+
     macro render(template, to io = response)
       ::Armature::Template.embed "views/{{template.id}}.ecr", {{io}}
     end
@@ -22,7 +171,7 @@ module Armature
     end
 
     class Request
-      delegate headers, path, :headers=, cookies, body, method, to: original_request
+      delegate headers, resource, path, :headers=, cookies, body, method, to: original_request
 
       getter context : HTTP::Server::Context
       getter original_request : HTTP::Request { context.request }
@@ -282,7 +431,7 @@ module HTTP
 
     def initialize(request, response)
       previous_def
-      @original_request_path = request.path
+      @original_request_path = request.resource
     end
 
     def handled!

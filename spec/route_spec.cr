@@ -2,9 +2,10 @@ require "./spec_helper"
 require "uuid"
 
 require "../src/route"
+require "../src/form"
 require "../src/session"
 
-class RouteTest
+struct RouteTest
   include Armature::Route
 
   def initialize(&@route : Request, Response, Armature::Session ->)
@@ -25,6 +26,55 @@ class RouteTest
         segment
       end
     end
+  end
+end
+
+struct RouteScaffoldTest
+  include Armature::Route
+  include Armature::Form::Helper
+
+  getter matched : String?
+  getter expected_id : UUID
+
+  def initialize(@expected_id)
+  end
+
+  scaffold id: UUID do |id|
+    if id == expected_id
+      "hello"
+    end
+  end
+
+  def index
+    @matched = "index"
+  end
+
+  def create
+    @matched = "create"
+  end
+
+  def new
+    @matched = "new"
+  end
+
+  def show(value : String)
+    @matched = "show"
+    value.should eq "hello"
+  end
+
+  def edit(value : String)
+    @matched = "edit"
+    value.should eq "hello"
+  end
+
+  def update(value : String)
+    @matched = "update"
+    value.should eq "hello"
+  end
+
+  def destroy(value : String)
+    @matched = "destroy"
+    value.should eq "hello"
   end
 end
 
@@ -248,17 +298,85 @@ describe Armature::Route do
 
     path.should eq "comments"
   end
+
+  context "scaffolding" do
+    expected_id = UUID.random
+    make = ->{ RouteScaffoldTest.new(expected_id) }
+
+    it "scaffolds the index route" do
+      route = make.call
+
+      route.call make_context(path: "/")
+      route.matched.should eq "index"
+    end
+
+    it "scaffolds the new route" do
+      route = make.call
+
+      route.call make_context(path: "/new")
+      route.matched.should eq "new"
+    end
+
+    it "scaffolds the create route" do
+      route = make.call
+
+      route.call make_context(path: "/", method: "POST")
+      route.matched.should eq "create"
+    end
+
+    it "scaffolds the show route" do
+      route = make.call
+
+      route.call make_context(path: "/#{expected_id}")
+      route.matched.should eq "show"
+    end
+
+    it "scaffolds the show route that returns a 404 if the id is in the wrong format" do
+      route = make.call
+
+      route.call make_context(path: "/asdf")
+      route.matched.should eq nil
+    end
+
+    it "scaffolds the show route that returns a 404 if the id doesn't match" do
+      route = make.call
+
+      route.call make_context(path: "/#{UUID.random}")
+      route.matched.should eq nil
+    end
+
+    it "scaffolds the edit route" do
+      route = make.call
+
+      route.call make_context(path: "/#{expected_id}/edit")
+      route.matched.should eq "edit"
+    end
+
+    it "scaffolds the update route" do
+      route = make.call
+
+      route.call make_context(path: "/#{expected_id}", method: "PUT")
+      route.matched.should eq "update"
+    end
+
+    it "scaffolds the destroy route" do
+      route = make.call
+
+      route.call make_context(path: "/#{expected_id}", method: "DELETE")
+      route.matched.should eq "destroy"
+    end
+  end
 end
 
 private def make_context(method = "GET", path = "/", request_body = nil, request_headers = HTTP::Headers.new, response_headers = HTTP::Headers.new, response_body = nil)
   response_io = IO::Memory.new
   context = HTTP::Server::Context.new(
     request: HTTP::Request.new(
-    method: method,
-    resource: path,
-    body: request_body,
-    headers: request_headers,
-  ),
+      method: method,
+      resource: path,
+      body: request_body,
+      headers: request_headers,
+    ),
     response: HTTP::Server::Response.new(response_io),
   )
 
