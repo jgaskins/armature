@@ -7,10 +7,11 @@ require "./session"
 
 module Armature
   class Session
-    class RedisStore < Store
+    class RedisStore(RedisClient) < Store
       getter key
 
       @expiration : Time::Span?
+      @redis : RedisClient
 
       def initialize(
         key : String,

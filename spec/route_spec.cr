@@ -3,7 +3,7 @@ require "uuid"
 
 require "../src/route"
 require "../src/form"
-require "../src/session"
+require "../src/memory_session"
 
 struct RouteTest
   include Armature::Route
@@ -31,7 +31,6 @@ end
 
 struct RouteScaffoldTest
   include Armature::Route
-  include Armature::Form::Helper
 
   getter matched : String?
   getter expected_id : UUID
@@ -319,9 +318,12 @@ describe Armature::Route do
 
     it "scaffolds the create route" do
       route = make.call
-
-      route.call make_context(path: "/", method: "POST")
+      route.call make_context(path: "/", method: "POST", pass_csrf_check: true)
       route.matched.should eq "create"
+
+      route = make.call
+      route.call make_context(path: "/", method: "POST", pass_csrf_check: false)
+      route.matched.should eq nil
     end
 
     it "scaffolds the show route" do
@@ -354,31 +356,69 @@ describe Armature::Route do
 
     it "scaffolds the update route" do
       route = make.call
-
-      route.call make_context(path: "/#{expected_id}", method: "PUT")
+      route.call make_context(path: "/#{expected_id}", method: "PUT", pass_csrf_check: true)
       route.matched.should eq "update"
+
+      route = make.call
+      route.call make_context(path: "/#{expected_id}", method: "PUT", pass_csrf_check: false)
+      route.matched.should eq nil
     end
 
     it "scaffolds the destroy route" do
       route = make.call
-
-      route.call make_context(path: "/#{expected_id}", method: "DELETE")
+      route.call make_context(path: "/#{expected_id}", method: "DELETE", pass_csrf_check: true)
       route.matched.should eq "destroy"
+
+      route = make.call
+      route.call make_context(path: "/#{expected_id}", method: "DELETE", pass_csrf_check: false)
+      route.matched.should eq nil
     end
   end
 end
 
-private def make_context(method = "GET", path = "/", request_body = nil, request_headers = HTTP::Headers.new, response_headers = HTTP::Headers.new, response_body = nil)
+private def make_context(method = "GET", path = "/", request_body = nil, request_headers = HTTP::Headers.new, response_headers = HTTP::Headers.new, response_body = nil, session : Armature::Session = make_session, pass_csrf_check = false)
+  if pass_csrf_check
+    Armature::Form::Helper.generate_authenticity_token! session
+    authenticity_token = Armature::Form::Helper.authenticity_token_for(session)
+    case method
+    when "GET", "DELETE"
+      resource = URI.parse(path)
+      params = resource.query_params
+      params["_authenticity_token"] = authenticity_token
+      path = "#{resource.path}?#{params}"
+    else
+      request_headers = request_headers.dup
+      request_headers["Content-Type"] = "application/x-www-form-urlencoded"
+      request_body = HTTP::Params.parse(request_body.to_s)
+        .tap { |params| params["_authenticity_token"] = authenticity_token }
+        .to_s
+    end
+  end
+
   response_io = IO::Memory.new
+  request = HTTP::Request.new(
+    method: method,
+    resource: path,
+    body: request_body,
+    headers: request_headers,
+  )
   context = HTTP::Server::Context.new(
-    request: HTTP::Request.new(
-      method: method,
-      resource: path,
-      body: request_body,
-      headers: request_headers,
-    ),
+    request: request,
     response: HTTP::Server::Response.new(response_io),
   )
+  context.session = session
 
   context
+end
+
+require "../src/form"
+
+private def make_session
+  store = Armature::Session::MemoryStore.new(key: "session")
+  cookies = HTTP::Cookies.new
+  Armature::Session::MemoryStore::Session.new(
+    store,
+    cookies,
+    {} of String => String,
+  )
 end
