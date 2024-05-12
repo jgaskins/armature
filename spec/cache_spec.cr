@@ -1,6 +1,7 @@
 require "./spec_helper"
 
 require "../src/cache"
+require "../src/cache/redis"
 require "uuid"
 
 redis = Redis::Client.new
