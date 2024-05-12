@@ -166,9 +166,9 @@ describe Armature::Route do
       # versions of `on` interpreted multiple args as "any of".
       r.on Int64, :thing do |int, thing|
         count += 1
-        int.should be_a Int64
+        typeof(int).should eq Int64
         int.should eq 64
-        thing.should be_a String
+        typeof(thing).should eq String
         thing.should eq "string"
       end
     end.call make_context(path: "/64/string")
