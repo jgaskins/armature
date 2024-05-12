@@ -45,6 +45,8 @@ module Armature
     # ```
     @[Experimental("Route scaffolding is not yet stabilized")]
     macro scaffold(*, id id_type = String)
+      include Armature::Form::Helper
+
       getter! context : HTTP::Server::Context
       getter request : Armature::Route::Request do
         Request.new context
