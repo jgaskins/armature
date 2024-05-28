@@ -120,21 +120,37 @@ module Armature
       def on(*segments)
         return if handled?
 
-        old_path = original_request.path
-        captures = segments.map do |matcher|
-          if (match = %r(\A/?[^/]+).match original_request.path.sub(%r(\A/), "")) && (result = match?(match[0], matcher))
-            original_request.path = original_request.path.sub(%r(\A/?#{match[0]}), "")
-            result
-          else
-            break nil
-          end
+        on segments do |captures|
+          yield *captures
         end
+      end
 
-        yield *captures if captures
-      ensure
-        if old_path
-          original_request.path = old_path
-        end
+      private def on(segments : Tuple(*T)) forall T
+        {% begin %}
+          path = original_request.path
+          captures = {
+            {% for i in 0...T.size %}
+              begin
+                %matcher{i} = segments[{{i}}]
+                if (%match{i} = %r(\A/?[^/]+).match path.sub(%r(\A/), "")) && (%result{i} = match?(%match{i}[0], %matcher{i}))
+                  path = path.sub(%r(\A/?#{%match{i}[0]}), "")
+                  %result{i}
+                end
+              end,
+            {% end %}
+          }
+
+          if captures.any?(&.nil?)
+            return
+          else
+            original_request.path = path
+            yield({
+              {% for i in 0...T.size %}
+                captures[{{i}}].not_nil!,
+              {% end %}
+            })
+          end
+        {% end %}
       end
 
       def on(**segments)
