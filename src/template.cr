@@ -145,9 +145,11 @@ module Armature::Template
     token = lexer.next_token
 
     String.build do |str|
+      output_block_level = 0
+      sanitize_block_stack = [] of Bool
       while true
         case token.type
-        when .string?
+        in .string?
           string = token.value
           token = lexer.next_token
 
@@ -157,7 +159,7 @@ module Armature::Template
           str << " << "
           string.inspect str
           str << '\n'
-        when .output?
+        in .output?
           string = token.value
           line_number = token.line_number
           column_number = token.column_number
@@ -179,7 +181,45 @@ module Armature::Template
           str << ")#<loc:pop>.to_s "
           str << buffer_name
           str << '\n'
-        when .control?
+        in .begin_output_block?
+          string = token.value
+          line_number = token.line_number
+          column_number = token.column_number
+          suppress_trailing = token.suppress_trailing?
+          token = lexer.next_token
+
+          suppress_trailing_whitespace(token, suppress_trailing)
+          output_block_level += 1
+          str.puts "# begin output block"
+          str << "#<loc:push>"
+          append_loc(str, filename, line_number, column_number)
+          str << variable(output_block_level) << " = "
+          # If they used <%|== safe_content do %>, we can just use that
+          if string.starts_with? '='
+            str.puts "# safe"
+            # Write all but the first byte to the buffer, but without allocating
+            # another string to do it.
+            str.write string.to_slice + 1
+            sanitize_block_stack << false
+          else
+            raise "HTML sanitization for block capture is not yet supported."
+            str << string
+            sanitize_block_stack << true
+          end
+        in .end_output_block?
+          string = token.value
+          token = lexer.next_token
+          str.puts "# end output block"
+          str.puts "#<loc:pop>"
+          str.puts string
+          if sanitize_block_stack.pop
+            str << "::Armature::Template::HTML::SanitizableValue.new(" << variable(output_block_level) << ')'
+          else
+            str << variable(output_block_level)
+          end
+          output_block_level -= 1
+          str << ".to_s " << buffer_name << '\n'
+        in .control?
           string = token.value
           line_number = token.line_number
           column_number = token.column_number
@@ -194,11 +234,15 @@ module Armature::Template
           str << string
           str << "#<loc:pop>"
           str << '\n'
-        when .eof?
+        in .eof?
           break
         end
       end
     end
+  end
+
+  private macro variable(name)
+    "{{name}}_#{{{name}}}"
   end
 
   private def suppress_leading_indentation(token, string)
@@ -243,6 +287,8 @@ module Armature::Template
       enum Type
         String
         Output
+        BeginOutputBlock
+        EndOutputBlock
         Control
         EOF
       end
@@ -286,6 +332,9 @@ module Armature::Template
           if current_char == '-'
             @token.suppress_leading = true
             next_char
+          elsif current_char == '|'
+            is_output_block = true
+            next_char
           else
             @token.suppress_leading = false
           end
@@ -303,7 +352,7 @@ module Armature::Template
             copy_location_info_to_token
           end
 
-          return consume_control(is_output, is_escape)
+          return consume_control(is_output, is_output_block, is_escape)
         end
       else
         # consume string
@@ -336,7 +385,7 @@ module Armature::Template
       @token
     end
 
-    private def consume_control(is_output, is_escape)
+    private def consume_control(is_output, is_output_block, is_escape)
       start_pos = current_pos
       while true
         case current_char
@@ -386,6 +435,12 @@ module Armature::Template
 
       if is_escape
         @token.type = :string
+      elsif is_output_block
+        if is_output
+          @token.type = :begin_output_block
+        else
+          @token.type = :end_output_block
+        end
       elsif is_output
         @token.type = :output
       else
