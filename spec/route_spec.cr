@@ -315,11 +315,11 @@ private def make_context(method = "GET", path = "/", request_body = nil, request
   response_io = IO::Memory.new
   context = HTTP::Server::Context.new(
     request: HTTP::Request.new(
-    method: method,
-    resource: path,
-    body: request_body,
-    headers: request_headers,
-  ),
+      method: method,
+      resource: path,
+      body: request_body,
+      headers: request_headers,
+    ),
     response: HTTP::Server::Response.new(response_io),
   )
 
