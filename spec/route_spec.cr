@@ -209,6 +209,49 @@ describe Armature::Route do
     method.should eq "post"
   end
 
+  context "matching only an endpoint with `is`" do
+    is_match = false
+    is_inner_match = false
+    inner_match = false
+    route = RouteTest.new do |r|
+      r.on "outer" do
+        r.is { is_match = true }
+        r.on "inner" { inner_match = true }
+        r.is "inner" { is_inner_match = true }
+      end
+    end
+
+    before_each do
+      is_match = false
+      is_inner_match = false
+      inner_match = false
+    end
+
+    it "with a path" do
+      route.call make_context(path: "/outer/inner")
+
+      is_match.should eq false
+      is_inner_match.should eq true
+      inner_match.should eq true
+    end
+
+    it "matches bare" do
+      route.call make_context(path: "/outer")
+
+      is_match.should eq true
+      is_inner_match.should eq false
+      inner_match.should eq false
+    end
+
+    it "does not match if it is not an endpoint" do
+      route.call make_context(path: "/outer/inner/endpoint")
+
+      is_match.should eq false
+      is_inner_match.should eq false
+      inner_match.should eq true
+    end
+  end
+
   it "marks a request as handled with `is`" do
     # Spec expectations are inside the app
     RouteTest.new do |r, response, session|

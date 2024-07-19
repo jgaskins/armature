@@ -47,7 +47,7 @@ module Armature
       def root
         return if handled?
 
-        is("") { yield }
+        is { yield }
       end
 
       macro handle_method(*methods)
@@ -79,11 +79,13 @@ module Armature
       def is
         return if handled?
 
-        old_path = original_request.path
-        begin
-          yield
-        ensure
-          handled!
+        if path == "" || path == "/"
+          old_path = original_request.path
+          begin
+            yield
+          ensure
+            handled!
+          end
         end
       ensure
         if old_path
@@ -94,26 +96,11 @@ module Armature
       def is(*segments)
         return if handled?
 
-        old_path = original_request.path
-        captures = segments.map do |matcher|
-          if (match = %r(\A/?[^/]*).match original_request.path.sub(%r(\A/), "")) && (result = match?(match[0], matcher))
-            original_request.path = original_request.path.sub(%r(\A/?#{match[0]}), "")
-            result
-          else
-            break nil
-          end
-        end
-
-        if captures
-          begin
-            yield *captures
-          ensure
+        on(*segments) do |*captures|
+          if path == "" || path == "/"
+            yield(*captures)
             handled!
           end
-        end
-      ensure
-        if old_path
-          original_request.path = old_path
         end
       end
 
