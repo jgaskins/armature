@@ -68,6 +68,24 @@ describe Armature::Route do
     handled.should eq true
   end
 
+  it "removes matched segments inside the block and replaces them after the block" do
+    RouteTest.new do |r|
+      r.path.should eq "/outer/inner/endpoint"
+
+      r.on "outer" do
+        r.path.should eq "/inner/endpoint"
+
+        r.on "inner" do
+          r.path.should eq "/endpoint"
+        end
+
+        r.path.should eq "/inner/endpoint"
+      end
+
+      r.path.should eq "/outer/inner/endpoint"
+    end.call make_context(path: "/outer/inner/endpoint")
+  end
+
   it "matches requests to routes with multiple args" do
     handled = false
     count = 0

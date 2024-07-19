@@ -128,27 +128,33 @@ module Armature
       private def on(segments : Tuple(*T)) forall T
         {% begin %}
           path = original_request.path
-          captures = {
-            {% for i in 0...T.size %}
-              begin
-                %matcher{i} = segments[{{i}}]
-                if (%match{i} = %r(\A/?[^/]+).match path.sub(%r(\A/), "")) && (%result{i} = match?(%match{i}[0], %matcher{i}))
-                  path = path.sub(%r(\A/?#{%match{i}[0]}), "")
-                  %result{i}
-                end
-              end,
-            {% end %}
-          }
+          original_path = path
 
-          if captures.any?(&.nil?)
-            return
-          else
-            original_request.path = path
-            yield({
+          begin
+            captures = {
               {% for i in 0...T.size %}
-                captures[{{i}}].not_nil!,
+                begin
+                  %matcher{i} = segments[{{i}}]
+                  if (%match{i} = %r(\A/?[^/]+).match path.lchop('/')) && (%result{i} = match?(%match{i}[0], %matcher{i}))
+                    path = path.sub(%r(\A/?#{%match{i}[0]}), "")
+                    %result{i}
+                  end
+                end,
               {% end %}
-            })
+            }
+
+            if captures.any?(&.nil?)
+              return
+            else
+              original_request.path = path
+              yield({
+                {% for i in 0...T.size %}
+                  captures[{{i}}].not_nil!,
+                {% end %}
+              })
+            end
+          ensure
+            original_request.path = original_path
           end
         {% end %}
       end
