@@ -1,0 +1,5 @@
+<ul>
+  <%- @collection.each do |item| -%>
+  <li><%-= @block.call item %></li>
+  <%- end -%>
+</ul>
