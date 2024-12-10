@@ -198,7 +198,7 @@ module Armature
       def root
         return if handled?
 
-        is("") { yield }
+        is { yield }
       end
 
       macro handle_method(*methods)
@@ -230,11 +230,13 @@ module Armature
       def is
         return if handled?
 
-        old_path = original_request.path
-        begin
-          yield
-        ensure
-          handled!
+        if path == "" || path == "/"
+          old_path = original_request.path
+          begin
+            yield
+          ensure
+            handled!
+          end
         end
       ensure
         if old_path
@@ -245,26 +247,11 @@ module Armature
       def is(*segments)
         return if handled?
 
-        old_path = original_request.path
-        captures = segments.map do |matcher|
-          if (match = %r(\A/?[^/]*).match original_request.path.sub(%r(\A/), "")) && (result = match?(match[0], matcher))
-            original_request.path = original_request.path.sub(%r(\A/?#{match[0]}), "")
-            result
-          else
-            break nil
-          end
-        end
-
-        if captures
-          begin
-            yield *captures
-          ensure
+        on(*segments) do |*captures|
+          if path == "" || path == "/"
+            yield(*captures)
             handled!
           end
-        end
-      ensure
-        if old_path
-          original_request.path = old_path
         end
       end
 
@@ -279,27 +266,33 @@ module Armature
       private def on(segments : Tuple(*T)) forall T
         {% begin %}
           path = original_request.path
-          captures = {
-            {% for i in 0...T.size %}
-              begin
-                %matcher{i} = segments[{{i}}]
-                if (%match{i} = %r(\A/?[^/]+).match path.sub(%r(\A/), "")) && (%result{i} = match?(%match{i}[0], %matcher{i}))
-                  path = path.sub(%r(\A/?#{%match{i}[0]}), "")
-                  %result{i}
-                end
-              end,
-            {% end %}
-          }
+          original_path = path
 
-          if captures.any?(&.nil?)
-            return
-          else
-            original_request.path = path
-            yield({
+          begin
+            captures = {
               {% for i in 0...T.size %}
-                captures[{{i}}].not_nil!,
+                begin
+                  %matcher{i} = segments[{{i}}]
+                  if (%match{i} = %r(\A/?[^/]+).match path.lchop('/')) && (%result{i} = match?(%match{i}[0], %matcher{i}))
+                    path = path.sub(%r(\A/?#{%match{i}[0]}), "")
+                    %result{i}
+                  end
+                end,
               {% end %}
-            })
+            }
+
+            if captures.any?(&.nil?)
+              return
+            else
+              original_request.path = path
+              yield({
+                {% for i in 0...T.size %}
+                  captures[{{i}}].not_nil!,
+                {% end %}
+              })
+            end
+          ensure
+            original_request.path = original_path
           end
         {% end %}
       end

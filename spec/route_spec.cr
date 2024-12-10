@@ -117,6 +117,24 @@ describe Armature::Route do
     handled.should eq true
   end
 
+  it "removes matched segments inside the block and replaces them after the block" do
+    RouteTest.new do |r|
+      r.path.should eq "/outer/inner/endpoint"
+
+      r.on "outer" do
+        r.path.should eq "/inner/endpoint"
+
+        r.on "inner" do
+          r.path.should eq "/endpoint"
+        end
+
+        r.path.should eq "/inner/endpoint"
+      end
+
+      r.path.should eq "/outer/inner/endpoint"
+    end.call make_context(path: "/outer/inner/endpoint")
+  end
+
   it "matches requests to routes with multiple args" do
     handled = false
     count = 0
@@ -238,6 +256,49 @@ describe Armature::Route do
     end.call make_context(method: "POST", path: "/posts")
 
     method.should eq "post"
+  end
+
+  context "matching only an endpoint with `is`" do
+    is_match = false
+    is_inner_match = false
+    inner_match = false
+    route = RouteTest.new do |r|
+      r.on "outer" do
+        r.is { is_match = true }
+        r.on "inner" { inner_match = true }
+        r.is "inner" { is_inner_match = true }
+      end
+    end
+
+    before_each do
+      is_match = false
+      is_inner_match = false
+      inner_match = false
+    end
+
+    it "with a path" do
+      route.call make_context(path: "/outer/inner")
+
+      is_match.should eq false
+      is_inner_match.should eq true
+      inner_match.should eq true
+    end
+
+    it "matches bare" do
+      route.call make_context(path: "/outer")
+
+      is_match.should eq true
+      is_inner_match.should eq false
+      inner_match.should eq false
+    end
+
+    it "does not match if it is not an endpoint" do
+      route.call make_context(path: "/outer/inner/endpoint")
+
+      is_match.should eq false
+      is_inner_match.should eq false
+      inner_match.should eq true
+    end
   end
 
   it "marks a request as handled with `is`" do
