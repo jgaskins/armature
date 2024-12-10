@@ -437,7 +437,17 @@ describe Armature::Route do
   end
 end
 
-private def make_context(method = "GET", path = "/", request_body = nil, request_headers = HTTP::Headers.new, response_headers = HTTP::Headers.new, response_body = nil, session : Armature::Session = make_session, pass_csrf_check = false)
+private def make_context(
+  method = "GET",
+  path = "/",
+  *,
+  request_body = nil,
+  request_headers = HTTP::Headers.new,
+  response_headers = HTTP::Headers.new,
+  response_body = nil,
+  session : Armature::Session = make_session,
+  pass_csrf_check = false,
+)
   if pass_csrf_check
     Armature::Form::Helper.generate_authenticity_token! session
     authenticity_token = Armature::Form::Helper.authenticity_token_for(session)
