@@ -1,7 +1,7 @@
 require "http"
 require "./route"
 require "./component"
+require "./version"
 
 module Armature
-  VERSION = "0.3.0"
 end

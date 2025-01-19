@@ -266,6 +266,7 @@ module Armature
   end
 end
 
+# :nodoc:
 module HTTP
   class Server::Context
     # We mutate the request path as we traverse the routing tree so we need to
