@@ -36,6 +36,21 @@ module Armature
     #   end
     #
     #   def create
+    #     title = r.form_params["title"]?
+    #     body = r.form_params["body"]?
+    #     if title && body
+    #       case post = PostQuery.new.create(title: title, body: body)
+    #       in Post
+    #         response.redirect "/posts/#{post.id}"
+    #       in Failure
+    #         response.status = :unprocessable_entity
+    #         error = post.errors
+    #         render "posts/errors"
+    #         render "posts/new"
+    #       end
+    #     else
+    #       response.status = :bad_request
+    #     end
     #   end
     #
     #   def show(post : Post)
@@ -159,7 +174,7 @@ module Armature
         not_found!
       end
 
-      private def not_found!
+      def not_found!
         response.status = :not_found
       end
     end
