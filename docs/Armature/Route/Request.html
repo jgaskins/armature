@@ -1,0 +1,1678 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="Crystal Docs 1.10.1">
+<meta name="crystal_docs.project_version" content="0.4.0">
+<meta name="crystal_docs.project_name" content="armature">
+
+
+
+<link href="../../css/style.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript" src="../../js/doc.js"></script>
+
+  <meta name="repository-name" content="armature">
+  <title>Armature::Route::Request - armature 0.4.0</title>
+  <script type="text/javascript">
+    CrystalDocs.base_path = "../../";
+  </script>
+</head>
+<body>
+
+<svg class="hidden">
+  <symbol id="octicon-link" viewBox="0 0 16 16">
+    <path fill="currentColor" fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path>
+  </symbol>
+</svg>
+<input type="checkbox" id="sidebar-btn">
+<label for="sidebar-btn" id="sidebar-btn-label">
+  <svg class="open" xmlns="http://www.w3.org/2000/svg" height="2em" width="2em" viewBox="0 0 512 512"><title>Open Sidebar</title><path fill="currentColor" d="M80 96v64h352V96H80zm0 112v64h352v-64H80zm0 112v64h352v-64H80z"></path></svg>
+  <svg class="close" xmlns="http://www.w3.org/2000/svg" width="2em" height="2em" viewBox="0 0 512 512"><title>Close Sidebar</title><path fill="currentColor" d="m118.6 73.4-45.2 45.2L210.7 256 73.4 393.4l45.2 45.2L256 301.3l137.4 137.3 45.2-45.2L301.3 256l137.3-137.4-45.2-45.2L256 210.7Z"></path></svg>
+</label>
+<div class="sidebar">
+  <div class="sidebar-header">
+    <div class="search-box">
+      <input type="search" class="search-input" placeholder="Search..." spellcheck="false" aria-label="Search">
+    </div>
+
+    <div class="project-summary">
+      <h1 class="project-name">
+        <a href="../../index.html">
+          armature
+        </a>
+      </h1>
+
+      <span class="project-version">
+        0.4.0
+      </span>
+    </div>
+  </div>
+
+  <div class="search-results hidden">
+    <ul class="search-list"></ul>
+  </div>
+
+  <div class="types-list">
+    <ul>
+  
+  <li class="parent open current" data-id="armature/Armature" data-name="armature">
+      <a href="../../Armature.html">Armature</a>
+      
+        <ul>
+  
+  <li class="parent " data-id="armature/Armature/BlankSession" data-name="armature::blanksession">
+      <a href="../../Armature/BlankSession.html">BlankSession</a>
+      
+        <ul>
+  
+  <li class=" " data-id="armature/Armature/BlankSession/Store" data-name="armature::blanksession::store">
+      <a href="../../Armature/BlankSession/Store.html">Store</a>
+      
+    </li>
+  
+</ul>
+
+      
+    </li>
+  
+  <li class="parent " data-id="armature/Armature/Cache" data-name="armature::cache">
+      <a href="../../Armature/Cache.html">Cache</a>
+      
+        <ul>
+  
+  <li class=" " data-id="armature/Armature/Cache/CacheStore" data-name="armature::cache::cachestore">
+      <a href="../../Armature/Cache/CacheStore.html">CacheStore</a>
+      
+    </li>
+  
+  <li class=" " data-id="armature/Armature/Cache/RedisStore" data-name="armature::cache::redisstore">
+      <a href="../../Armature/Cache/RedisStore.html">RedisStore</a>
+      
+    </li>
+  
+</ul>
+
+      
+    </li>
+  
+  <li class=" " data-id="armature/Armature/Component" data-name="armature::component">
+      <a href="../../Armature/Component.html">Component</a>
+      
+    </li>
+  
+  <li class="parent " data-id="armature/Armature/Form" data-name="armature::form">
+      <a href="../../Armature/Form.html">Form</a>
+      
+        <ul>
+  
+  <li class=" " data-id="armature/Armature/Form/Helper" data-name="armature::form::helper">
+      <a href="../../Armature/Form/Helper.html">Helper</a>
+      
+    </li>
+  
+</ul>
+
+      
+    </li>
+  
+  <li class="parent open current" data-id="armature/Armature/Route" data-name="armature::route">
+      <a href="../../Armature/Route.html">Route</a>
+      
+        <ul>
+  
+  <li class=" current" data-id="armature/Armature/Route/Request" data-name="armature::route::request">
+      <a href="../../Armature/Route/Request.html">Request</a>
+      
+    </li>
+  
+  <li class=" " data-id="armature/Armature/Route/RequestHandled" data-name="armature::route::requesthandled">
+      <a href="../../Armature/Route/RequestHandled.html">RequestHandled</a>
+      
+    </li>
+  
+  <li class=" " data-id="armature/Armature/Route/Response" data-name="armature::route::response">
+      <a href="../../Armature/Route/Response.html">Response</a>
+      
+    </li>
+  
+  <li class=" " data-id="armature/Armature/Route/UnauthenticatedException" data-name="armature::route::unauthenticatedexception">
+      <a href="../../Armature/Route/UnauthenticatedException.html">UnauthenticatedException</a>
+      
+    </li>
+  
+</ul>
+
+      
+    </li>
+  
+  <li class="parent " data-id="armature/Armature/Session" data-name="armature::session">
+      <a href="../../Armature/Session.html">Session</a>
+      
+        <ul>
+  
+  <li class="parent " data-id="armature/Armature/Session/RedisStore" data-name="armature::session::redisstore">
+      <a href="../../Armature/Session/RedisStore.html">RedisStore</a>
+      
+        <ul>
+  
+  <li class="parent " data-id="armature/Armature/Session/RedisStore/Session" data-name="armature::session::redisstore::session">
+      <a href="../../Armature/Session/RedisStore/Session.html">Session</a>
+      
+        <ul>
+  
+  <li class=" " data-id="armature/Armature/Session/RedisStore/Session/Data" data-name="armature::session::redisstore::session::data">
+      <a href="../../Armature/Session/RedisStore/Session/Data.html">Data</a>
+      
+    </li>
+  
+</ul>
+
+      
+    </li>
+  
+</ul>
+
+      
+    </li>
+  
+  <li class=" " data-id="armature/Armature/Session/Store" data-name="armature::session::store">
+      <a href="../../Armature/Session/Store.html">Store</a>
+      
+    </li>
+  
+</ul>
+
+      
+    </li>
+  
+  <li class="parent " data-id="armature/Armature/Template" data-name="armature::template">
+      <a href="../../Armature/Template.html">Template</a>
+      
+        <ul>
+  
+  <li class="parent " data-id="armature/Armature/Template/HTML" data-name="armature::template::html">
+      <a href="../../Armature/Template/HTML.html">HTML</a>
+      
+        <ul>
+  
+  <li class=" " data-id="armature/Armature/Template/HTML/SafeValue" data-name="armature::template::html::safevalue(t)">
+      <a href="../../Armature/Template/HTML/SafeValue.html">SafeValue</a>
+      
+    </li>
+  
+  <li class=" " data-id="armature/Armature/Template/HTML/SanitizableValue" data-name="armature::template::html::sanitizablevalue(t)">
+      <a href="../../Armature/Template/HTML/SanitizableValue.html">SanitizableValue</a>
+      
+    </li>
+  
+</ul>
+
+      
+    </li>
+  
+  <li class="parent " data-id="armature/Armature/Template/Lexer" data-name="armature::template::lexer">
+      <a href="../../Armature/Template/Lexer.html">Lexer</a>
+      
+        <ul>
+  
+  <li class="parent " data-id="armature/Armature/Template/Lexer/Token" data-name="armature::template::lexer::token">
+      <a href="../../Armature/Template/Lexer/Token.html">Token</a>
+      
+        <ul>
+  
+  <li class=" " data-id="armature/Armature/Template/Lexer/Token/Type" data-name="armature::template::lexer::token::type">
+      <a href="../../Armature/Template/Lexer/Token/Type.html">Type</a>
+      
+    </li>
+  
+</ul>
+
+      
+    </li>
+  
+</ul>
+
+      
+    </li>
+  
+</ul>
+
+      
+    </li>
+  
+</ul>
+
+      
+    </li>
+  
+</ul>
+
+  </div>
+</div>
+
+
+<div class="main-content">
+<h1 class="type-name">
+
+  <span class="kind">class</span> Armature::<wbr>Route::<wbr>Request
+
+</h1>
+
+
+  <ul class="superclass-hierarchy"><li class="superclass"><a href="../../Armature/Route/Request.html">Armature::Route::Request</a></li><li class="superclass">Reference</li><li class="superclass">Object</li></ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  <h2>
+    <a id="defined-in" class="anchor" href="#defined-in">
+  <svg class="octicon-link" aria-hidden="true">
+    <use href="#octicon-link"/>
+  </svg>
+</a>
+    Defined in:
+  </h2>
+  
+    
+      <a href="https://github.com/jgaskins/armature/blob/v0.4.0/src/route.cr#L24" target="_blank">
+        route.cr
+      </a>
+    
+    <br/>
+  
+
+
+
+
+
+  <h2>
+    <a id="constructors" class="anchor" href="#constructors">
+  <svg class="octicon-link" aria-hidden="true">
+    <use href="#octicon-link"/>
+  </svg>
+</a>
+    Constructors
+  </h2>
+  <ul class="list-summary">
+    
+      <li class="entry-summary">
+        <a href="#new%28context%3AHTTP%3A%3AServer%3A%3AContext%29-class-method" class="signature"><strong>.new</strong>(context : HTTP::Server::Context)</a>
+        
+      </li>
+    
+  </ul>
+
+
+
+
+
+  <h2>
+    <a id="macro-summary" class="anchor" href="#macro-summary">
+  <svg class="octicon-link" aria-hidden="true">
+    <use href="#octicon-link"/>
+  </svg>
+</a>
+    Macro Summary
+  </h2>
+  <ul class="list-summary">
+    
+      <li class="entry-summary">
+        <a href="#handle_method%28%2Amethods%29-macro" class="signature"><strong>handle_method</strong>(*methods)</a>
+        
+      </li>
+    
+  </ul>
+
+
+
+  <h2>
+    <a id="instance-method-summary" class="anchor" href="#instance-method-summary">
+  <svg class="octicon-link" aria-hidden="true">
+    <use href="#octicon-link"/>
+  </svg>
+</a>
+    Instance Method Summary
+  </h2>
+  <ul class="list-summary">
+    
+      <li class="entry-summary">
+        <a href="#body%28%2Aargs%2C%2A%2Aoptions%29-instance-method" class="signature"><strong>#body</strong>(*args, **options)</a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#body%28%2Aargs%2C%2A%2Aoptions%2C%26%29-instance-method" class="signature"><strong>#body</strong>(*args, **options, &)</a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#context%3AHTTP%3A%3AServer%3A%3AContext-instance-method" class="signature"><strong>#context</strong> : HTTP::Server::Context</a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#cookies%28%2Aargs%2C%2A%2Aoptions%29-instance-method" class="signature"><strong>#cookies</strong>(*args, **options)</a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#cookies%28%2Aargs%2C%2A%2Aoptions%2C%26%29-instance-method" class="signature"><strong>#cookies</strong>(*args, **options, &)</a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#delete%28capture%3ASymbol%2C%26%29-instance-method" class="signature"><strong>#delete</strong>(capture : Symbol, &)</a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#delete%28path%3AString%2C%26%29-instance-method" class="signature"><strong>#delete</strong>(path : String, &)</a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#delete%28%26%29-instance-method" class="signature"><strong>#delete</strong>(&)</a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#form_params-instance-method" class="signature"><strong>#form_params</strong></a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#get%28capture%3ASymbol%2C%26%29-instance-method" class="signature"><strong>#get</strong>(capture : Symbol, &)</a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#get%28path%3AString%2C%26%29-instance-method" class="signature"><strong>#get</strong>(path : String, &)</a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#get%28%26%29-instance-method" class="signature"><strong>#get</strong>(&)</a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#handled%21-instance-method" class="signature"><strong>#handled!</strong></a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#handled%3F-instance-method" class="signature"><strong>#handled?</strong></a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#headers%28%2Aargs%2C%2A%2Aoptions%29-instance-method" class="signature"><strong>#headers</strong>(*args, **options)</a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#headers%28%2Aargs%2C%2A%2Aoptions%2C%26%29-instance-method" class="signature"><strong>#headers</strong>(*args, **options, &)</a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#headers%3D%28arg%29-instance-method" class="signature"><strong>#headers=</strong>(arg)</a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#is%28%26%29-instance-method" class="signature"><strong>#is</strong>(&)</a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#is%28%2Asegments%2C%26%29-instance-method" class="signature"><strong>#is</strong>(*segments, &)</a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#json%3F-instance-method" class="signature"><strong>#json?</strong></a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#match%3F%28segment%3AString%2Cmatcher%3AInt8.class%29-instance-method" class="signature"><strong>#match?</strong>(segment : String, matcher : <span class="t">Int8</span>.<span class="k">class</span>)</a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#match%3F%28segment%3AString%2Cmatcher%3AInt16.class%29-instance-method" class="signature"><strong>#match?</strong>(segment : String, matcher : <span class="t">Int16</span>.<span class="k">class</span>)</a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#match%3F%28segment%3AString%2Cmatcher%3AInt32.class%29-instance-method" class="signature"><strong>#match?</strong>(segment : String, matcher : <span class="t">Int32</span>.<span class="k">class</span>)</a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#match%3F%28segment%3AString%2Cmatcher%3AInt64.class%29-instance-method" class="signature"><strong>#match?</strong>(segment : String, matcher : <span class="t">Int64</span>.<span class="k">class</span>)</a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#match%3F%28segment%3AString%2Cmatcher%3AInt128.class%29-instance-method" class="signature"><strong>#match?</strong>(segment : String, matcher : <span class="t">Int128</span>.<span class="k">class</span>)</a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#match%3F%28segment%3AString%2Cmatcher%3AUInt8.class%29-instance-method" class="signature"><strong>#match?</strong>(segment : String, matcher : <span class="t">UInt8</span>.<span class="k">class</span>)</a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#match%3F%28segment%3AString%2Cmatcher%3AUInt16.class%29-instance-method" class="signature"><strong>#match?</strong>(segment : String, matcher : <span class="t">UInt16</span>.<span class="k">class</span>)</a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#match%3F%28segment%3AString%2Cmatcher%3AUInt32.class%29-instance-method" class="signature"><strong>#match?</strong>(segment : String, matcher : <span class="t">UInt32</span>.<span class="k">class</span>)</a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#match%3F%28segment%3AString%2Cmatcher%3AUInt64.class%29-instance-method" class="signature"><strong>#match?</strong>(segment : String, matcher : <span class="t">UInt64</span>.<span class="k">class</span>)</a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#match%3F%28segment%3AString%2Cmatcher%3AUInt128.class%29-instance-method" class="signature"><strong>#match?</strong>(segment : String, matcher : <span class="t">UInt128</span>.<span class="k">class</span>)</a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#match%3F%28segment%3AString%2Cmatcher%3ASymbol%7CString.class%29-instance-method" class="signature"><strong>#match?</strong>(segment : String, matcher : Symbol | <span class="t">String</span>.<span class="k">class</span>)</a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#match%3F%28segment%3AString%2Cmatcher%3AUUID.class%29-instance-method" class="signature"><strong>#match?</strong>(segment : String, matcher : <span class="t">UUID</span>.<span class="k">class</span>)</a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#match%3F%28segment%3AString%2Cmatcher%3ARegex%29-instance-method" class="signature"><strong>#match?</strong>(segment : String, matcher : Regex)</a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#match%3F%28segment%3AString%2Cmatcher%29-instance-method" class="signature"><strong>#match?</strong>(segment : String, matcher)</a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#method%28%2Aargs%2C%2A%2Aoptions%29-instance-method" class="signature"><strong>#method</strong>(*args, **options)</a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#method%28%2Aargs%2C%2A%2Aoptions%2C%26%29-instance-method" class="signature"><strong>#method</strong>(*args, **options, &)</a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#miss%28%26%29-instance-method" class="signature"><strong>#miss</strong>(&)</a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#on%28%2Asegments%2C%26%29-instance-method" class="signature"><strong>#on</strong>(*segments, &)</a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#on%28%2A%2Asegments%2C%26%29-instance-method" class="signature"><strong>#on</strong>(**segments, &)</a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#original_path-instance-method" class="signature"><strong>#original_path</strong></a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#original_request%3AHTTP%3A%3ARequest-instance-method" class="signature"><strong>#original_request</strong> : HTTP::Request</a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#params-instance-method" class="signature"><strong>#params</strong></a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#params%28%2Aparams%2C%26%29-instance-method" class="signature"><strong>#params</strong>(*params, &)</a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#patch%28capture%3ASymbol%2C%26%29-instance-method" class="signature"><strong>#patch</strong>(capture : Symbol, &)</a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#patch%28path%3AString%2C%26%29-instance-method" class="signature"><strong>#patch</strong>(path : String, &)</a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#patch%28%26%29-instance-method" class="signature"><strong>#patch</strong>(&)</a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#path%28%2Aargs%2C%2A%2Aoptions%29-instance-method" class="signature"><strong>#path</strong>(*args, **options)</a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#path%28%2Aargs%2C%2A%2Aoptions%2C%26%29-instance-method" class="signature"><strong>#path</strong>(*args, **options, &)</a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#post%28capture%3ASymbol%2C%26%29-instance-method" class="signature"><strong>#post</strong>(capture : Symbol, &)</a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#post%28path%3AString%2C%26%29-instance-method" class="signature"><strong>#post</strong>(path : String, &)</a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#post%28%26%29-instance-method" class="signature"><strong>#post</strong>(&)</a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#put%28capture%3ASymbol%2C%26%29-instance-method" class="signature"><strong>#put</strong>(capture : Symbol, &)</a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#put%28path%3AString%2C%26%29-instance-method" class="signature"><strong>#put</strong>(path : String, &)</a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#put%28%26%29-instance-method" class="signature"><strong>#put</strong>(&)</a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#response%3AResponse-instance-method" class="signature"><strong>#response</strong> : Response</a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#root%28%26%29-instance-method" class="signature"><strong>#root</strong>(&)</a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#session%3ASession-instance-method" class="signature"><strong>#session</strong> : Session</a>
+        
+      </li>
+    
+      <li class="entry-summary">
+        <a href="#url%3AURI-instance-method" class="signature"><strong>#url</strong> : URI</a>
+        
+      </li>
+    
+  </ul>
+
+
+
+<div class="methods-inherited">
+  
+    
+
+
+    
+
+
+    
+
+
+    
+
+
+  
+    
+
+
+    
+
+
+    
+
+
+    
+
+
+  
+</div>
+
+
+  <h2>
+    <a id="constructor-detail" class="anchor" href="#constructor-detail">
+  <svg class="octicon-link" aria-hidden="true">
+    <use href="#octicon-link"/>
+  </svg>
+</a>
+    Constructor Detail
+  </h2>
+  
+    <div class="entry-detail" id="new(context:HTTP::Server::Context)-class-method">
+      <div class="signature">
+        
+        def self.<strong>new</strong>(context : HTTP::Server::Context)
+
+        <a class="method-permalink" href="#new%28context%3AHTTP%3A%3AServer%3A%3AContext%29-class-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/jgaskins/armature/blob/v0.4.0/src/route.cr#L32" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+
+
+
+
+
+  <h2>
+    <a id="macro-detail" class="anchor" href="#macro-detail">
+  <svg class="octicon-link" aria-hidden="true">
+    <use href="#octicon-link"/>
+  </svg>
+</a>
+    Macro Detail
+  </h2>
+  
+    <div class="entry-detail" id="handle_method(*methods)-macro">
+      <div class="signature">
+        
+        macro <strong>handle_method</strong>(*methods)
+
+        <a class="method-permalink" href="#handle_method%28%2Amethods%29-macro">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/jgaskins/armature/blob/v0.4.0/src/route.cr#L53" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+
+
+
+  <h2>
+    <a id="instance-method-detail" class="anchor" href="#instance-method-detail">
+  <svg class="octicon-link" aria-hidden="true">
+    <use href="#octicon-link"/>
+  </svg>
+</a>
+    Instance Method Detail
+  </h2>
+  
+    <div class="entry-detail" id="body(*args,**options)-instance-method">
+      <div class="signature">
+        
+        def <strong>body</strong>(*args, **options)
+
+        <a class="method-permalink" href="#body%28%2Aargs%2C%2A%2Aoptions%29-instance-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/jgaskins/armature/blob/v0.4.0/src/route.cr#L25" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="body(*args,**options,&amp;)-instance-method">
+      <div class="signature">
+        
+        def <strong>body</strong>(*args, **options, &)
+
+        <a class="method-permalink" href="#body%28%2Aargs%2C%2A%2Aoptions%2C%26%29-instance-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/jgaskins/armature/blob/v0.4.0/src/route.cr#L25" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="context:HTTP::Server::Context-instance-method">
+      <div class="signature">
+        
+        def <strong>context</strong> : HTTP::Server::Context
+
+        <a class="method-permalink" href="#context%3AHTTP%3A%3AServer%3A%3AContext-instance-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/jgaskins/armature/blob/v0.4.0/src/route.cr#L27" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="cookies(*args,**options)-instance-method">
+      <div class="signature">
+        
+        def <strong>cookies</strong>(*args, **options)
+
+        <a class="method-permalink" href="#cookies%28%2Aargs%2C%2A%2Aoptions%29-instance-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/jgaskins/armature/blob/v0.4.0/src/route.cr#L25" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="cookies(*args,**options,&amp;)-instance-method">
+      <div class="signature">
+        
+        def <strong>cookies</strong>(*args, **options, &)
+
+        <a class="method-permalink" href="#cookies%28%2Aargs%2C%2A%2Aoptions%2C%26%29-instance-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/jgaskins/armature/blob/v0.4.0/src/route.cr#L25" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="delete(capture:Symbol,&amp;)-instance-method">
+      <div class="signature">
+        
+        def <strong>delete</strong>(capture : Symbol, &)
+
+        <a class="method-permalink" href="#delete%28capture%3ASymbol%2C%26%29-instance-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/jgaskins/armature/blob/v0.4.0/src/route.cr#L77" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="delete(path:String,&amp;)-instance-method">
+      <div class="signature">
+        
+        def <strong>delete</strong>(path : String, &)
+
+        <a class="method-permalink" href="#delete%28path%3AString%2C%26%29-instance-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/jgaskins/armature/blob/v0.4.0/src/route.cr#L77" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="delete(&amp;)-instance-method">
+      <div class="signature">
+        
+        def <strong>delete</strong>(&)
+
+        <a class="method-permalink" href="#delete%28%26%29-instance-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/jgaskins/armature/blob/v0.4.0/src/route.cr#L77" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="form_params-instance-method">
+      <div class="signature">
+        
+        def <strong>form_params</strong>
+
+        <a class="method-permalink" href="#form_params-instance-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/jgaskins/armature/blob/v0.4.0/src/route.cr#L39" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="get(capture:Symbol,&amp;)-instance-method">
+      <div class="signature">
+        
+        def <strong>get</strong>(capture : Symbol, &)
+
+        <a class="method-permalink" href="#get%28capture%3ASymbol%2C%26%29-instance-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/jgaskins/armature/blob/v0.4.0/src/route.cr#L77" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="get(path:String,&amp;)-instance-method">
+      <div class="signature">
+        
+        def <strong>get</strong>(path : String, &)
+
+        <a class="method-permalink" href="#get%28path%3AString%2C%26%29-instance-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/jgaskins/armature/blob/v0.4.0/src/route.cr#L77" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="get(&amp;)-instance-method">
+      <div class="signature">
+        
+        def <strong>get</strong>(&)
+
+        <a class="method-permalink" href="#get%28%26%29-instance-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/jgaskins/armature/blob/v0.4.0/src/route.cr#L77" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="handled!-instance-method">
+      <div class="signature">
+        
+        def <strong>handled!</strong>
+
+        <a class="method-permalink" href="#handled%21-instance-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/jgaskins/armature/blob/v0.4.0/src/route.cr#L216" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="handled?-instance-method">
+      <div class="signature">
+        
+        def <strong>handled?</strong>
+
+        <a class="method-permalink" href="#handled%3F-instance-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/jgaskins/armature/blob/v0.4.0/src/route.cr#L212" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="headers(*args,**options)-instance-method">
+      <div class="signature">
+        
+        def <strong>headers</strong>(*args, **options)
+
+        <a class="method-permalink" href="#headers%28%2Aargs%2C%2A%2Aoptions%29-instance-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/jgaskins/armature/blob/v0.4.0/src/route.cr#L25" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="headers(*args,**options,&amp;)-instance-method">
+      <div class="signature">
+        
+        def <strong>headers</strong>(*args, **options, &)
+
+        <a class="method-permalink" href="#headers%28%2Aargs%2C%2A%2Aoptions%2C%26%29-instance-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/jgaskins/armature/blob/v0.4.0/src/route.cr#L25" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="headers=(arg)-instance-method">
+      <div class="signature">
+        
+        def <strong>headers=</strong>(arg)
+
+        <a class="method-permalink" href="#headers%3D%28arg%29-instance-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/jgaskins/armature/blob/v0.4.0/src/route.cr#L25" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="is(&amp;)-instance-method">
+      <div class="signature">
+        
+        def <strong>is</strong>(&)
+
+        <a class="method-permalink" href="#is%28%26%29-instance-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/jgaskins/armature/blob/v0.4.0/src/route.cr#L79" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="is(*segments,&amp;)-instance-method">
+      <div class="signature">
+        
+        def <strong>is</strong>(*segments, &)
+
+        <a class="method-permalink" href="#is%28%2Asegments%2C%26%29-instance-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/jgaskins/armature/blob/v0.4.0/src/route.cr#L96" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="json?-instance-method">
+      <div class="signature">
+        
+        def <strong>json?</strong>
+
+        <a class="method-permalink" href="#json%3F-instance-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/jgaskins/armature/blob/v0.4.0/src/route.cr#L200" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="match?(segment:String,matcher:Int8.class)-instance-method">
+      <div class="signature">
+        
+        def <strong>match?</strong>(segment : String, matcher : <span class="t">Int8</span>.<span class="k">class</span>)
+
+        <a class="method-permalink" href="#match%3F%28segment%3AString%2Cmatcher%3AInt8.class%29-instance-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/jgaskins/armature/blob/v0.4.0/src/route.cr#L159" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="match?(segment:String,matcher:Int16.class)-instance-method">
+      <div class="signature">
+        
+        def <strong>match?</strong>(segment : String, matcher : <span class="t">Int16</span>.<span class="k">class</span>)
+
+        <a class="method-permalink" href="#match%3F%28segment%3AString%2Cmatcher%3AInt16.class%29-instance-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/jgaskins/armature/blob/v0.4.0/src/route.cr#L159" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="match?(segment:String,matcher:Int32.class)-instance-method">
+      <div class="signature">
+        
+        def <strong>match?</strong>(segment : String, matcher : <span class="t">Int32</span>.<span class="k">class</span>)
+
+        <a class="method-permalink" href="#match%3F%28segment%3AString%2Cmatcher%3AInt32.class%29-instance-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/jgaskins/armature/blob/v0.4.0/src/route.cr#L159" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="match?(segment:String,matcher:Int64.class)-instance-method">
+      <div class="signature">
+        
+        def <strong>match?</strong>(segment : String, matcher : <span class="t">Int64</span>.<span class="k">class</span>)
+
+        <a class="method-permalink" href="#match%3F%28segment%3AString%2Cmatcher%3AInt64.class%29-instance-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/jgaskins/armature/blob/v0.4.0/src/route.cr#L159" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="match?(segment:String,matcher:Int128.class)-instance-method">
+      <div class="signature">
+        
+        def <strong>match?</strong>(segment : String, matcher : <span class="t">Int128</span>.<span class="k">class</span>)
+
+        <a class="method-permalink" href="#match%3F%28segment%3AString%2Cmatcher%3AInt128.class%29-instance-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/jgaskins/armature/blob/v0.4.0/src/route.cr#L159" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="match?(segment:String,matcher:UInt8.class)-instance-method">
+      <div class="signature">
+        
+        def <strong>match?</strong>(segment : String, matcher : <span class="t">UInt8</span>.<span class="k">class</span>)
+
+        <a class="method-permalink" href="#match%3F%28segment%3AString%2Cmatcher%3AUInt8.class%29-instance-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/jgaskins/armature/blob/v0.4.0/src/route.cr#L159" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="match?(segment:String,matcher:UInt16.class)-instance-method">
+      <div class="signature">
+        
+        def <strong>match?</strong>(segment : String, matcher : <span class="t">UInt16</span>.<span class="k">class</span>)
+
+        <a class="method-permalink" href="#match%3F%28segment%3AString%2Cmatcher%3AUInt16.class%29-instance-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/jgaskins/armature/blob/v0.4.0/src/route.cr#L159" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="match?(segment:String,matcher:UInt32.class)-instance-method">
+      <div class="signature">
+        
+        def <strong>match?</strong>(segment : String, matcher : <span class="t">UInt32</span>.<span class="k">class</span>)
+
+        <a class="method-permalink" href="#match%3F%28segment%3AString%2Cmatcher%3AUInt32.class%29-instance-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/jgaskins/armature/blob/v0.4.0/src/route.cr#L159" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="match?(segment:String,matcher:UInt64.class)-instance-method">
+      <div class="signature">
+        
+        def <strong>match?</strong>(segment : String, matcher : <span class="t">UInt64</span>.<span class="k">class</span>)
+
+        <a class="method-permalink" href="#match%3F%28segment%3AString%2Cmatcher%3AUInt64.class%29-instance-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/jgaskins/armature/blob/v0.4.0/src/route.cr#L159" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="match?(segment:String,matcher:UInt128.class)-instance-method">
+      <div class="signature">
+        
+        def <strong>match?</strong>(segment : String, matcher : <span class="t">UInt128</span>.<span class="k">class</span>)
+
+        <a class="method-permalink" href="#match%3F%28segment%3AString%2Cmatcher%3AUInt128.class%29-instance-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/jgaskins/armature/blob/v0.4.0/src/route.cr#L159" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="match?(segment:String,matcher:Symbol|String.class)-instance-method">
+      <div class="signature">
+        
+        def <strong>match?</strong>(segment : String, matcher : Symbol | <span class="t">String</span>.<span class="k">class</span>)
+
+        <a class="method-permalink" href="#match%3F%28segment%3AString%2Cmatcher%3ASymbol%7CString.class%29-instance-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/jgaskins/armature/blob/v0.4.0/src/route.cr#L167" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="match?(segment:String,matcher:UUID.class)-instance-method">
+      <div class="signature">
+        
+        def <strong>match?</strong>(segment : String, matcher : <span class="t">UUID</span>.<span class="k">class</span>)
+
+        <a class="method-permalink" href="#match%3F%28segment%3AString%2Cmatcher%3AUUID.class%29-instance-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/jgaskins/armature/blob/v0.4.0/src/route.cr#L171" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="match?(segment:String,matcher:Regex)-instance-method">
+      <div class="signature">
+        
+        def <strong>match?</strong>(segment : String, matcher : Regex)
+
+        <a class="method-permalink" href="#match%3F%28segment%3AString%2Cmatcher%3ARegex%29-instance-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/jgaskins/armature/blob/v0.4.0/src/route.cr#L175" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="match?(segment:String,matcher)-instance-method">
+      <div class="signature">
+        
+        def <strong>match?</strong>(segment : String, matcher)
+
+        <a class="method-permalink" href="#match%3F%28segment%3AString%2Cmatcher%29-instance-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/jgaskins/armature/blob/v0.4.0/src/route.cr#L155" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="method(*args,**options)-instance-method">
+      <div class="signature">
+        
+        def <strong>method</strong>(*args, **options)
+
+        <a class="method-permalink" href="#method%28%2Aargs%2C%2A%2Aoptions%29-instance-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/jgaskins/armature/blob/v0.4.0/src/route.cr#L25" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="method(*args,**options,&amp;)-instance-method">
+      <div class="signature">
+        
+        def <strong>method</strong>(*args, **options, &)
+
+        <a class="method-permalink" href="#method%28%2Aargs%2C%2A%2Aoptions%2C%26%29-instance-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/jgaskins/armature/blob/v0.4.0/src/route.cr#L25" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="miss(&amp;)-instance-method">
+      <div class="signature">
+        
+        def <strong>miss</strong>(&)
+
+        <a class="method-permalink" href="#miss%28%26%29-instance-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/jgaskins/armature/blob/v0.4.0/src/route.cr#L190" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="on(*segments,&amp;)-instance-method">
+      <div class="signature">
+        
+        def <strong>on</strong>(*segments, &)
+
+        <a class="method-permalink" href="#on%28%2Asegments%2C%26%29-instance-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/jgaskins/armature/blob/v0.4.0/src/route.cr#L107" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="on(**segments,&amp;)-instance-method">
+      <div class="signature">
+        
+        def <strong>on</strong>(**segments, &)
+
+        <a class="method-permalink" href="#on%28%2A%2Asegments%2C%26%29-instance-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/jgaskins/armature/blob/v0.4.0/src/route.cr#L149" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="original_path-instance-method">
+      <div class="signature">
+        
+        def <strong>original_path</strong>
+
+        <a class="method-permalink" href="#original_path-instance-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/jgaskins/armature/blob/v0.4.0/src/route.cr#L43" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="original_request:HTTP::Request-instance-method">
+      <div class="signature">
+        
+        def <strong>original_request</strong> : HTTP::Request
+
+        <a class="method-permalink" href="#original_request%3AHTTP%3A%3ARequest-instance-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/jgaskins/armature/blob/v0.4.0/src/route.cr#L28" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="params-instance-method">
+      <div class="signature">
+        
+        def <strong>params</strong>
+
+        <a class="method-permalink" href="#params-instance-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/jgaskins/armature/blob/v0.4.0/src/route.cr#L35" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="params(*params,&amp;)-instance-method">
+      <div class="signature">
+        
+        def <strong>params</strong>(*params, &)
+
+        <a class="method-permalink" href="#params%28%2Aparams%2C%26%29-instance-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/jgaskins/armature/blob/v0.4.0/src/route.cr#L179" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="patch(capture:Symbol,&amp;)-instance-method">
+      <div class="signature">
+        
+        def <strong>patch</strong>(capture : Symbol, &)
+
+        <a class="method-permalink" href="#patch%28capture%3ASymbol%2C%26%29-instance-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/jgaskins/armature/blob/v0.4.0/src/route.cr#L77" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="patch(path:String,&amp;)-instance-method">
+      <div class="signature">
+        
+        def <strong>patch</strong>(path : String, &)
+
+        <a class="method-permalink" href="#patch%28path%3AString%2C%26%29-instance-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/jgaskins/armature/blob/v0.4.0/src/route.cr#L77" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="patch(&amp;)-instance-method">
+      <div class="signature">
+        
+        def <strong>patch</strong>(&)
+
+        <a class="method-permalink" href="#patch%28%26%29-instance-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/jgaskins/armature/blob/v0.4.0/src/route.cr#L77" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="path(*args,**options)-instance-method">
+      <div class="signature">
+        
+        def <strong>path</strong>(*args, **options)
+
+        <a class="method-permalink" href="#path%28%2Aargs%2C%2A%2Aoptions%29-instance-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/jgaskins/armature/blob/v0.4.0/src/route.cr#L25" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="path(*args,**options,&amp;)-instance-method">
+      <div class="signature">
+        
+        def <strong>path</strong>(*args, **options, &)
+
+        <a class="method-permalink" href="#path%28%2Aargs%2C%2A%2Aoptions%2C%26%29-instance-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/jgaskins/armature/blob/v0.4.0/src/route.cr#L25" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="post(capture:Symbol,&amp;)-instance-method">
+      <div class="signature">
+        
+        def <strong>post</strong>(capture : Symbol, &)
+
+        <a class="method-permalink" href="#post%28capture%3ASymbol%2C%26%29-instance-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/jgaskins/armature/blob/v0.4.0/src/route.cr#L77" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="post(path:String,&amp;)-instance-method">
+      <div class="signature">
+        
+        def <strong>post</strong>(path : String, &)
+
+        <a class="method-permalink" href="#post%28path%3AString%2C%26%29-instance-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/jgaskins/armature/blob/v0.4.0/src/route.cr#L77" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="post(&amp;)-instance-method">
+      <div class="signature">
+        
+        def <strong>post</strong>(&)
+
+        <a class="method-permalink" href="#post%28%26%29-instance-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/jgaskins/armature/blob/v0.4.0/src/route.cr#L77" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="put(capture:Symbol,&amp;)-instance-method">
+      <div class="signature">
+        
+        def <strong>put</strong>(capture : Symbol, &)
+
+        <a class="method-permalink" href="#put%28capture%3ASymbol%2C%26%29-instance-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/jgaskins/armature/blob/v0.4.0/src/route.cr#L77" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="put(path:String,&amp;)-instance-method">
+      <div class="signature">
+        
+        def <strong>put</strong>(path : String, &)
+
+        <a class="method-permalink" href="#put%28path%3AString%2C%26%29-instance-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/jgaskins/armature/blob/v0.4.0/src/route.cr#L77" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="put(&amp;)-instance-method">
+      <div class="signature">
+        
+        def <strong>put</strong>(&)
+
+        <a class="method-permalink" href="#put%28%26%29-instance-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/jgaskins/armature/blob/v0.4.0/src/route.cr#L77" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="response:Response-instance-method">
+      <div class="signature">
+        
+        def <strong>response</strong> : <a href="../../Armature/Route/Response.html">Response</a>
+
+        <a class="method-permalink" href="#response%3AResponse-instance-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/jgaskins/armature/blob/v0.4.0/src/route.cr#L29" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="root(&amp;)-instance-method">
+      <div class="signature">
+        
+        def <strong>root</strong>(&)
+
+        <a class="method-permalink" href="#root%28%26%29-instance-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/jgaskins/armature/blob/v0.4.0/src/route.cr#L47" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="session:Session-instance-method">
+      <div class="signature">
+        
+        def <strong>session</strong> : <a href="../../Armature/Session.html">Session</a>
+
+        <a class="method-permalink" href="#session%3ASession-instance-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/jgaskins/armature/blob/v0.4.0/src/route.cr#L30" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+    <div class="entry-detail" id="url:URI-instance-method">
+      <div class="signature">
+        
+        def <strong>url</strong> : URI
+
+        <a class="method-permalink" href="#url%3AURI-instance-method">#</a>
+      </div>
+      
+      <br/>
+      <div>
+        
+          [<a href="https://github.com/jgaskins/armature/blob/v0.4.0/src/route.cr#L204" target="_blank">View source</a>]
+        
+      </div>
+    </div>
+  
+
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="Crystal Docs 1.10.1">
+<meta name="crystal_docs.project_version" content="0.4.0">
+<meta name="crystal_docs.project_name" content="armature">
+
+
+
+<link href="css/style.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript" src="js/doc.js"></script>
+
+  <meta name="repository-name" content="armature">
+  <title>armature 0.4.0</title>
+  <script type="text/javascript">
+  CrystalDocs.base_path = "";
+  </script>
+</head>
+<body>
+
+<svg class="hidden">
+  <symbol id="octicon-link" viewBox="0 0 16 16">
+    <path fill="currentColor" fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path>
+  </symbol>
+</svg>
+<input type="checkbox" id="sidebar-btn">
+<label for="sidebar-btn" id="sidebar-btn-label">
+  <svg class="open" xmlns="http://www.w3.org/2000/svg" height="2em" width="2em" viewBox="0 0 512 512"><title>Open Sidebar</title><path fill="currentColor" d="M80 96v64h352V96H80zm0 112v64h352v-64H80zm0 112v64h352v-64H80z"></path></svg>
+  <svg class="close" xmlns="http://www.w3.org/2000/svg" width="2em" height="2em" viewBox="0 0 512 512"><title>Close Sidebar</title><path fill="currentColor" d="m118.6 73.4-45.2 45.2L210.7 256 73.4 393.4l45.2 45.2L256 301.3l137.4 137.3 45.2-45.2L301.3 256l137.3-137.4-45.2-45.2L256 210.7Z"></path></svg>
+</label>
+<div class="sidebar">
+  <div class="sidebar-header">
+    <div class="search-box">
+      <input type="search" class="search-input" placeholder="Search..." spellcheck="false" aria-label="Search">
+    </div>
+
+    <div class="project-summary">
+      <h1 class="project-name">
+        <a href="index.html">
+          armature
+        </a>
+      </h1>
+
+      <span class="project-version">
+        0.4.0
+      </span>
+    </div>
+  </div>
+
+  <div class="search-results hidden">
+    <ul class="search-list"></ul>
+  </div>
+
+  <div class="types-list">
+    <ul>
+  
+  <li class="parent " data-id="armature/Armature" data-name="armature">
+      <a href="Armature.html">Armature</a>
+      
+        <ul>
+  
+  <li class="parent " data-id="armature/Armature/BlankSession" data-name="armature::blanksession">
+      <a href="Armature/BlankSession.html">BlankSession</a>
+      
+        <ul>
+  
+  <li class=" " data-id="armature/Armature/BlankSession/Store" data-name="armature::blanksession::store">
+      <a href="Armature/BlankSession/Store.html">Store</a>
+      
+    </li>
+  
+</ul>
+
+      
+    </li>
+  
+  <li class="parent " data-id="armature/Armature/Cache" data-name="armature::cache">
+      <a href="Armature/Cache.html">Cache</a>
+      
+        <ul>
+  
+  <li class=" " data-id="armature/Armature/Cache/CacheStore" data-name="armature::cache::cachestore">
+      <a href="Armature/Cache/CacheStore.html">CacheStore</a>
+      
+    </li>
+  
+  <li class=" " data-id="armature/Armature/Cache/RedisStore" data-name="armature::cache::redisstore">
+      <a href="Armature/Cache/RedisStore.html">RedisStore</a>
+      
+    </li>
+  
+</ul>
+
+      
+    </li>
+  
+  <li class=" " data-id="armature/Armature/Component" data-name="armature::component">
+      <a href="Armature/Component.html">Component</a>
+      
+    </li>
+  
+  <li class="parent " data-id="armature/Armature/Form" data-name="armature::form">
+      <a href="Armature/Form.html">Form</a>
+      
+        <ul>
+  
+  <li class=" " data-id="armature/Armature/Form/Helper" data-name="armature::form::helper">
+      <a href="Armature/Form/Helper.html">Helper</a>
+      
+    </li>
+  
+</ul>
+
+      
+    </li>
+  
+  <li class="parent " data-id="armature/Armature/Route" data-name="armature::route">
+      <a href="Armature/Route.html">Route</a>
+      
+        <ul>
+  
+  <li class=" " data-id="armature/Armature/Route/Request" data-name="armature::route::request">
+      <a href="Armature/Route/Request.html">Request</a>
+      
+    </li>
+  
+  <li class=" " data-id="armature/Armature/Route/RequestHandled" data-name="armature::route::requesthandled">
+      <a href="Armature/Route/RequestHandled.html">RequestHandled</a>
+      
+    </li>
+  
+  <li class=" " data-id="armature/Armature/Route/Response" data-name="armature::route::response">
+      <a href="Armature/Route/Response.html">Response</a>
+      
+    </li>
+  
+  <li class=" " data-id="armature/Armature/Route/UnauthenticatedException" data-name="armature::route::unauthenticatedexception">
+      <a href="Armature/Route/UnauthenticatedException.html">UnauthenticatedException</a>
+      
+    </li>
+  
+</ul>
+
+      
+    </li>
+  
+  <li class="parent " data-id="armature/Armature/Session" data-name="armature::session">
+      <a href="Armature/Session.html">Session</a>
+      
+        <ul>
+  
+  <li class="parent " data-id="armature/Armature/Session/RedisStore" data-name="armature::session::redisstore">
+      <a href="Armature/Session/RedisStore.html">RedisStore</a>
+      
+        <ul>
+  
+  <li class="parent " data-id="armature/Armature/Session/RedisStore/Session" data-name="armature::session::redisstore::session">
+      <a href="Armature/Session/RedisStore/Session.html">Session</a>
+      
+        <ul>
+  
+  <li class=" " data-id="armature/Armature/Session/RedisStore/Session/Data" data-name="armature::session::redisstore::session::data">
+      <a href="Armature/Session/RedisStore/Session/Data.html">Data</a>
+      
+    </li>
+  
+</ul>
+
+      
+    </li>
+  
+</ul>
+
+      
+    </li>
+  
+  <li class=" " data-id="armature/Armature/Session/Store" data-name="armature::session::store">
+      <a href="Armature/Session/Store.html">Store</a>
+      
+    </li>
+  
+</ul>
+
+      
+    </li>
+  
+  <li class="parent " data-id="armature/Armature/Template" data-name="armature::template">
+      <a href="Armature/Template.html">Template</a>
+      
+        <ul>
+  
+  <li class="parent " data-id="armature/Armature/Template/HTML" data-name="armature::template::html">
+      <a href="Armature/Template/HTML.html">HTML</a>
+      
+        <ul>
+  
+  <li class=" " data-id="armature/Armature/Template/HTML/SafeValue" data-name="armature::template::html::safevalue(t)">
+      <a href="Armature/Template/HTML/SafeValue.html">SafeValue</a>
+      
+    </li>
+  
+  <li class=" " data-id="armature/Armature/Template/HTML/SanitizableValue" data-name="armature::template::html::sanitizablevalue(t)">
+      <a href="Armature/Template/HTML/SanitizableValue.html">SanitizableValue</a>
+      
+    </li>
+  
+</ul>
+
+      
+    </li>
+  
+  <li class="parent " data-id="armature/Armature/Template/Lexer" data-name="armature::template::lexer">
+      <a href="Armature/Template/Lexer.html">Lexer</a>
+      
+        <ul>
+  
+  <li class="parent " data-id="armature/Armature/Template/Lexer/Token" data-name="armature::template::lexer::token">
+      <a href="Armature/Template/Lexer/Token.html">Token</a>
+      
+        <ul>
+  
+  <li class=" " data-id="armature/Armature/Template/Lexer/Token/Type" data-name="armature::template::lexer::token::type">
+      <a href="Armature/Template/Lexer/Token/Type.html">Type</a>
+      
+    </li>
+  
+</ul>
+
+      
+    </li>
+  
+</ul>
+
+      
+    </li>
+  
+</ul>
+
+      
+    </li>
+  
+</ul>
+
+      
+    </li>
+  
+</ul>
+
+  </div>
+</div>
+
+
+<div class="main-content">
+<h1><a id="armature" class="anchor" href="#armature">  <svg class="octicon-link" aria-hidden="true">
+    <use href="#octicon-link"/>
+  </svg>
+</a>Armature</h1>
+<p>Armature is an HTTP routing framework for Crystal.</p>
+<h2><a id="installation" class="anchor" href="#installation">
+  <svg class="octicon-link" aria-hidden="true">
+    <use href="#octicon-link"/>
+  </svg>
+</a>Installation</h2>
+<ol>
+<li>
+<p>Add the dependency to your <code>shard.yml</code>:</p>
+<pre><code class="language-yaml">dependencies:
+  armature:
+    github: jgaskins/armature</code></pre>
+</li>
+<li>
+<p>Run <code>shards install</code></p>
+</li>
+</ol>
+<h2><a id="usage" class="anchor" href="#usage">
+  <svg class="octicon-link" aria-hidden="true">
+    <use href="#octicon-link"/>
+  </svg>
+</a>Usage</h2>
+<p>Armature has 2 primary components:</p>
+<ul>
+<li><code><a href="Armature/Route.html">Armature::Route</a></code>
+<ul>
+<li>Provides a routing graph by allowing a top-level application to delegate to various child routes based on path segments</li>
+<li>Provides an <a href="https://crystal-lang.org/api/1.0.0/ECR.html">ECR</a> rendering macro to render view templates at compile time. View templates are under the <code>views/</code> directory in the application root.</li>
+<li>Provides a missed-match handler (<code>r.miss</code>) so you can provide custom 404 handling in a way that's simple and discoverable</li>
+</ul>
+</li>
+<li><code><a href="Armature/Session.html">Armature::Session</a></code>
+<ul>
+<li>If you're using cookie-based authentication, you can use Armature sessions to persist session data between requests</li>
+<li>Currently the only supported session adapter is <code><a href="Armature/Session/RedisStore.html">Armature::Session::RedisStore</a></code>. The value stored in the cookie is the session id and the data stored in Redis will be the session data serialized into a JSON string.</li>
+</ul>
+</li>
+</ul>
+<pre><code class="language-crystal"><span class="k">require</span> <span class="s">&quot;armature&quot;</span>
+<span class="k">require</span> <span class="s">&quot;armature/redis_session&quot;</span>
+<span class="k">require</span> <span class="s">&quot;redis&quot;</span>
+
+<span class="k">class</span> <span class="t">App</span>
+  <span class="k">include</span> <span class="t">HTTP</span><span class="t">::</span><span class="t">Handler</span>
+  <span class="k">include</span> <span class="t">Armature</span><span class="t">::</span><span class="t">Route</span>
+
+  <span class="k">def</span> <span class="m">call</span>(context)
+    route context <span class="k">do</span> <span class="o">|</span>r, response, session<span class="o">|</span>
+      <span class="c"># The `session` can be treated as a key/value object. All JSON-friendly</span>
+      <span class="c"># types can be stored and retrieved. The stored session data is saved as</span>
+      <span class="c"># JSON and parsed into a `JSON::Any`.</span>
+      <span class="k">if</span> current_user_id <span class="o">=</span> session[<span class="s">&quot;user_id&quot;</span>]?.try(<span class="o">&amp;</span>.as_i?)
+        current_user <span class="o">=</span> <span class="t">UserQuery</span>.new.find_by_id(current_user_id)
+      <span class="k">end</span>
+
+      <span class="c"># `render` macro provided by `Armature::Route` renders the given template</span>
+      <span class="c"># inside the `views/` directory to the `response` object. This example</span>
+      <span class="c"># renders `views/app_header.ecr`.</span>
+      <span class="c">#</span>
+      <span class="c"># Note: You can render as many templates as you need, allowing for nesting</span>
+      <span class="c"># your UI via nested routes.</span>
+      render <span class="s">&quot;app_header&quot;</span>
+      
+      <span class="c"># Root path (all HTTP verbs)</span>
+      r.root <span class="k">do</span>
+        <span class="c"># Execute the given block only for GET requests</span>
+        r.get { render <span class="s">&quot;homepage&quot;</span> }
+
+        <span class="c"># Execute the given block only for POST requests</span>
+        r.post <span class="k">do</span>
+          <span class="c"># ...</span>
+        <span class="k">end</span>
+      <span class="k">end</span>
+
+      <span class="c"># Delegate certain paths to other `Armature::Route`s with `on`</span>
+      r.on <span class="s">&quot;products&quot;</span> { <span class="t">Products</span>.new.call(context) }
+
+      <span class="c"># Allow for authenticated-only routes</span>
+      <span class="k">if</span> current_user
+        r.on <span class="s">&quot;notifications&quot;</span> { <span class="t">Notifications</span>.new(current_user).call(context) }
+        r.on <span class="s">&quot;cart&quot;</span> { <span class="t">Cart</span>.new(current_user).call(context) }
+      <span class="k">end</span>
+
+      <span class="c"># Execute a block if an endpoint has not been reached yet.</span>
+      r.miss <span class="k">do</span>
+        response.status <span class="o">=</span> <span class="n">:not_found</span>
+        render <span class="s">&quot;not_found&quot;</span>
+      <span class="k">end</span>
+
+      <span class="c"># Rendering the footer below main app content</span>
+      render <span class="s">&quot;app_footer&quot;</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+
+http <span class="o">=</span> <span class="t">HTTP</span><span class="t">::</span><span class="t">Server</span>.new([
+  <span class="t">Armature</span><span class="t">::</span><span class="t">Session</span><span class="t">::</span><span class="t">RedisStore</span>.new(
+    <span class="c"># the HTTP cookie name to store the session id in</span>
+    key: <span class="s">&quot;app_session&quot;</span>,
+    <span class="c"># a client for the Redis instance to store session data in</span>
+    redis: <span class="t">Redis</span><span class="t">::</span><span class="t">Client</span>.from_env(<span class="s">&quot;REDIS_URL&quot;</span>),
+  ),
+  <span class="t">App</span>.new,
+])
+http.listen <span class="n">8080</span></code></pre>
+<p>Other useful components are:</p>
+<ul>
+<li><code><a href="Armature/Form/Helper.html">Armature::Form::Helper</a></code></li>
+<li><code><a href="Armature/Cache.html">Armature::Cache</a></code></li>
+<li><code><a href="Armature/Component.html">Armature::Component</a></code></li>
+</ul>
+<h2><a id="contributing" class="anchor" href="#contributing">
+  <svg class="octicon-link" aria-hidden="true">
+    <use href="#octicon-link"/>
+  </svg>
+</a>Contributing</h2>
+<ol>
+<li>Fork it (<a href="https://github.com/jgaskins/armature/fork">https://github.com/jgaskins/armature/fork</a>)</li>
+<li>Create your feature branch (<code>git checkout -b my-new-feature</code>)</li>
+<li>Commit your changes (<code>git commit -am 'Add some feature'</code>)</li>
+<li>Push to the branch (<code>git push origin my-new-feature</code>)</li>
+<li>Create a new Pull Request</li>
+</ol>
+<h2><a id="contributors" class="anchor" href="#contributors">
+  <svg class="octicon-link" aria-hidden="true">
+    <use href="#octicon-link"/>
+  </svg>
+</a>Contributors</h2>
+<ul>
+<li><a href="https://github.com/jgaskins">Jamie Gaskins</a> - creator and maintainer</li>
+</ul>
+</div>
+</body>
+</html>
