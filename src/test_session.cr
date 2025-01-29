@@ -1,6 +1,7 @@
 require "http/client"
 require "http/headers"
 require "lexbor"
+require "hot_topic"
 
 require "./memory_session"
 
