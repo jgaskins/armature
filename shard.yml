@@ -9,6 +9,9 @@ dependencies:
     github: jgaskins/redis
   msgpack:
     github: crystal-community/msgpack-crystal
+development_dependencies:
+  armature:
+    path: .
 
 crystal: 1.0.0
 
