@@ -105,6 +105,18 @@ describe Armature::Route do
     count.should eq 1
   end
 
+  it "captures requests to routes with a '*'" do
+    match = nil
+
+    RouteTest.new do |r|
+      r.on :id do |id|
+        match = id
+      end
+    end.call make_context(path: "/*")
+
+    match.should eq "*"
+  end
+
   it "matches requests to dynamic routes using symbols" do
     match = nil
 

@@ -123,7 +123,7 @@ module Armature
                 begin
                   %matcher{i} = segments[{{i}}]
                   if (%match{i} = %r(\A/?[^/]+).match path.lchop('/')) && (%result{i} = match?(%match{i}[0], %matcher{i}))
-                    path = path.sub(%r(\A/?#{%match{i}[0]}), "")
+                    path = path.sub(%r(\A/?#{Regex.escape %match{i}[0]}), "")
                     %result{i}
                   end
                 end,
