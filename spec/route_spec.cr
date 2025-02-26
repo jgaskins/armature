@@ -69,6 +69,8 @@ describe Armature::Route do
   end
 
   it "removes matched segments inside the block and replaces them after the block" do
+    reached_endpoint = false
+
     RouteTest.new do |r|
       r.path.should eq "/outer/inner/endpoint"
 
@@ -77,12 +79,27 @@ describe Armature::Route do
 
         r.on "inner" do
           r.path.should eq "/endpoint"
+          reached_endpoint = true
         end
 
         r.path.should eq "/inner/endpoint"
       end
 
       r.path.should eq "/outer/inner/endpoint"
+    end.call make_context(path: "/outer/inner/endpoint")
+
+    reached_endpoint.should eq true
+  end
+
+  it "tracks the original request path" do
+    RouteTest.new do |r|
+      r.on "outer" do
+        r.on "inner" do
+          r.get "endpoint" do
+            r.original_path.should eq "/outer/inner/endpoint"
+          end
+        end
+      end
     end.call make_context(path: "/outer/inner/endpoint")
   end
 

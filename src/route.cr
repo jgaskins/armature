@@ -266,16 +266,24 @@ module Armature
   end
 end
 
+require "http/server/context"
 # :nodoc:
-module HTTP
-  class Server::Context
+class HTTP::Server
+  # Instances of this class are passed to an `HTTP::Server` handler.
+  class Context
+    # The `HTTP::Request` to process.
+    getter request : Request
+
+    # The `HTTP::Server::Response` to configure and write to.
+    getter response : Response
+
     # We mutate the request path as we traverse the routing tree so we need to
     # be able to know the original path.
     property! original_request_path : String
     getter? handled = false
 
-    def initialize(request, response)
-      previous_def
+    # :nodoc:
+    def initialize(@request : Request, @response : Response)
       @original_request_path = request.path
     end
 
