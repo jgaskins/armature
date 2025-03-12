@@ -122,8 +122,18 @@ module Armature
               {% for i in 0...T.size %}
                 begin
                   %matcher{i} = segments[{{i}}]
-                  if (%match{i} = %r(\A/?[^/]+).match path.lchop('/')) && (%result{i} = match?(%match{i}[0], %matcher{i}))
-                    path = path.sub(%r(\A/?#{Regex.escape %match{i}[0]}), "")
+                  path = path.lchop('/')
+                  if slash_index = path.index('/')
+                    segment = path[0...slash_index]
+                  else
+                    segment = path
+                  end
+                  if (%match{i} = segment.presence) && (%result{i} = match?(%match{i}, %matcher{i}))
+                    if segment == path
+                      path = ""
+                    else
+                      path = path.lchop(segment)
+                    end
                     %result{i}
                   end
                 end,
@@ -154,6 +164,12 @@ module Armature
 
       def match?(segment : String, matcher)
         matcher === segment
+      end
+
+      def match?(segment : String, matcher : String)
+        if matcher.starts_with? segment
+          segment
+        end
       end
 
       {% for type in %w[Int UInt] %}

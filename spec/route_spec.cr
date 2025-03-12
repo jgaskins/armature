@@ -204,6 +204,18 @@ describe Armature::Route do
     match.should eq "HELLO"
   end
 
+  it "matches static paths with slashes" do
+    matched = false
+
+    RouteTest.new do |r|
+      r.on "foo/bar" do
+        matched = true
+      end
+    end.call make_context(path: "/foo/bar")
+
+    matched.should eq true
+  end
+
   it "matches requests to dynamic routes with multiple typed args" do
     handled = false
     count = 0
