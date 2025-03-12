@@ -44,7 +44,7 @@ module Armature
         context.original_request_path
       end
 
-      def root
+      def root(&)
         return if handled?
 
         is { yield }
@@ -76,7 +76,7 @@ module Armature
 
       handle_method get, post, put, patch, delete
 
-      def is
+      def is(&)
         return if handled?
 
         if path == "" || path == "/"
@@ -93,7 +93,7 @@ module Armature
         end
       end
 
-      def is(*segments)
+      def is(*segments, &)
         return if handled?
 
         on(*segments) do |*captures|
@@ -104,7 +104,7 @@ module Armature
         end
       end
 
-      def on(*segments)
+      def on(*segments, &)
         return if handled?
 
         on segments do |captures|
@@ -112,7 +112,7 @@ module Armature
         end
       end
 
-      private def on(segments : Tuple(*T)) forall T
+      private def on(segments : Tuple(*T), &) forall T
         {% begin %}
           path = original_request.path
           original_path = path
@@ -146,7 +146,7 @@ module Armature
         {% end %}
       end
 
-      def on(**segments)
+      def on(**segments, &)
         on *segments.values do |*args|
           yield *args
         end
@@ -176,7 +176,7 @@ module Armature
         matcher.match segment
       end
 
-      def params(*params)
+      def params(*params, &)
         return if handled?
         return if !params.all? { |param| original_request.query_params.has_key? param }
 
@@ -187,7 +187,7 @@ module Armature
         end
       end
 
-      def miss
+      def miss(&)
         return if handled?
 
         begin
@@ -267,6 +267,7 @@ module Armature
 end
 
 require "http/server/context"
+
 # :nodoc:
 class HTTP::Server
   # Instances of this class are passed to an `HTTP::Server` handler.
