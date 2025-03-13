@@ -9,6 +9,14 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        crystal:
+          - 1.13.3
+          - 1.14.1
+          - latest
+          - nightly
 
     # Service containers to run with the job
     services:
@@ -34,7 +42,7 @@ jobs:
     - name: Setup Crystal
       uses: crystal-lang/install-crystal@v1
       with:
-        crystal_version: latest
+        crystal: ${{ matrix.crystal }}
 
     # Install dependencies
     - name: Install dependencies
