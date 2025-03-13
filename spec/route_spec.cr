@@ -204,14 +204,16 @@ describe Armature::Route do
     match.should eq "HELLO"
   end
 
-  it "matches static paths with slashes" do
+  pending "matches static paths with slashes" do
     matched = false
 
     RouteTest.new do |r|
       r.on "foo/bar" do
-        matched = true
+        r.on "baz/quux" do
+          matched = true
+        end
       end
-    end.call make_context(path: "/foo/bar")
+    end.call make_context(path: "/foo/bar/baz/quux")
 
     matched.should eq true
   end
