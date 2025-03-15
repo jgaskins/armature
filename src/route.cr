@@ -255,9 +255,9 @@ module Armature
       def initialize(@response)
       end
 
-      def redirect(path, status : HTTP::Status = :see_other)
+      def redirect(path : String | URI, status : HTTP::Status = :see_other)
         self.status = status
-        @response.headers["Location"] = path
+        @response.headers["Location"] = path.to_s
       end
 
       def json(serializer)

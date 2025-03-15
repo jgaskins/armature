@@ -352,6 +352,27 @@ describe Armature::Route do
 
     path.should eq "comments"
   end
+
+  describe Armature::Route::Response do
+    it "redirects to a string URL" do
+      response = Armature::Route::Response.new(HTTP::Server::Response.new(IO::Memory.new))
+
+      response.redirect "/"
+
+      response.status.should eq HTTP::Status::SEE_OTHER
+      response.headers["location"].should eq "/"
+    end
+
+    it "redirects to a URI" do
+      response = Armature::Route::Response.new(HTTP::Server::Response.new(IO::Memory.new))
+      uri = URI.parse("https://example.com/foo?bar=baz")
+
+      response.redirect uri
+
+      response.status.should eq HTTP::Status::SEE_OTHER
+      response.headers["location"].should eq "https://example.com/foo?bar=baz"
+    end
+  end
 end
 
 private def make_context(method = "GET", path = "/", request_body = nil, request_headers = HTTP::Headers.new, response_headers = HTTP::Headers.new, response_body = nil)
