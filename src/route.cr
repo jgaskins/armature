@@ -123,18 +123,27 @@ module Armature
                 begin
                   %matcher{i} = segments[{{i}}]
                   path = path.lchop('/')
-                  if slash_index = path.index('/')
-                    segment = path[0...slash_index]
-                  else
-                    segment = path
-                  end
-                  if (%match{i} = segment.presence) && (%result{i} = match?(%match{i}, %matcher{i}))
-                    if segment == path
-                      path = ""
-                    else
+                  if %matcher{i}.is_a?(String)
+                    %matcher{i} = %matcher{i}.lchop('/')
+                    if path.starts_with?(%matcher{i})
+                      segment = %matcher{i}
                       path = path.lchop(segment)
                     end
-                    %result{i}
+                    segment
+                  else
+                    if slash_index = path.index('/')
+                      segment = path[0...slash_index]
+                    else
+                      segment = path
+                    end
+                    if (%match{i} = segment.presence) && (%result{i} = match?(%match{i}, %matcher{i}))
+                      if segment == path
+                        path = ""
+                      else
+                        path = path.lchop(segment)
+                      end
+                      %result{i}
+                    end
                   end
                 end,
               {% end %}

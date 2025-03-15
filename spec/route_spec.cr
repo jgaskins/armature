@@ -204,7 +204,7 @@ describe Armature::Route do
     match.should eq "HELLO"
   end
 
-  pending "matches static paths with slashes" do
+  it "matches static paths with slashes" do
     matched = false
 
     RouteTest.new do |r|
