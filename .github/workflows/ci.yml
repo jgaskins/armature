@@ -1,0 +1,55 @@
+name: CI
+
+on:
+  push: {}
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        crystal:
+          - 1.13.3
+          - 1.14.1
+          - latest
+          - nightly
+
+    # Service containers to run with the job
+    services:
+      # Redis service container
+      redis:
+        # Docker Hub image
+        image: redis:latest
+        # Set health checks to wait until redis has started
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 1s
+          --health-timeout 5s
+          --health-retries 60
+        ports:
+          # Maps port 6379 on service container to the host
+          - 6379:6379
+
+    steps:
+    # Checks out your repository under $GITHUB_WORKSPACE
+    - uses: actions/checkout@v4
+
+    # Sets up Crystal
+    - name: Setup Crystal
+      uses: crystal-lang/install-crystal@v1
+      with:
+        crystal: ${{ matrix.crystal }}
+
+    # Install dependencies
+    - name: Install dependencies
+      run: shards install --jobs 12
+
+    # Run Crystal specs
+    - name: Run specs
+      run: crystal spec
+      env:
+        # Set Redis URL for your tests to connect to
+        REDIS_URL: redis://localhost:6379

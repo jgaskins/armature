@@ -105,7 +105,7 @@ module Armature
         end
 
         def new?
-          cookie.nil?
+          cookie.nil? || data.empty?
         end
 
         private getter cookie : HTTP::Cookie? do

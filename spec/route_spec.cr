@@ -69,6 +69,8 @@ describe Armature::Route do
   end
 
   it "removes matched segments inside the block and replaces them after the block" do
+    reached_endpoint = false
+
     RouteTest.new do |r|
       r.path.should eq "/outer/inner/endpoint"
 
@@ -77,12 +79,27 @@ describe Armature::Route do
 
         r.on "inner" do
           r.path.should eq "/endpoint"
+          reached_endpoint = true
         end
 
         r.path.should eq "/inner/endpoint"
       end
 
       r.path.should eq "/outer/inner/endpoint"
+    end.call make_context(path: "/outer/inner/endpoint")
+
+    reached_endpoint.should eq true
+  end
+
+  it "tracks the original request path" do
+    RouteTest.new do |r|
+      r.on "outer" do
+        r.on "inner" do
+          r.get "endpoint" do
+            r.original_path.should eq "/outer/inner/endpoint"
+          end
+        end
+      end
     end.call make_context(path: "/outer/inner/endpoint")
   end
 
@@ -103,6 +120,18 @@ describe Armature::Route do
 
     handled.should eq true
     count.should eq 1
+  end
+
+  it "captures requests to routes with a '*'" do
+    match = nil
+
+    RouteTest.new do |r|
+      r.on :id do |id|
+        match = id
+      end
+    end.call make_context(path: "/*")
+
+    match.should eq "*"
   end
 
   it "matches requests to dynamic routes using symbols" do
@@ -173,6 +202,20 @@ describe Armature::Route do
 
     route.call make_context(path: "/foo/HELLO")
     match.should eq "HELLO"
+  end
+
+  it "matches static paths with slashes" do
+    matched = false
+
+    RouteTest.new do |r|
+      r.on "foo/bar" do
+        r.on "baz/quux" do
+          matched = true
+        end
+      end
+    end.call make_context(path: "/foo/bar/baz/quux")
+
+    matched.should eq true
   end
 
   it "matches requests to dynamic routes with multiple typed args" do
@@ -308,6 +351,27 @@ describe Armature::Route do
     end.call make_context(path: "posts/123/comments/")
 
     path.should eq "comments"
+  end
+
+  describe Armature::Route::Response do
+    it "redirects to a string URL" do
+      response = Armature::Route::Response.new(HTTP::Server::Response.new(IO::Memory.new))
+
+      response.redirect "/"
+
+      response.status.should eq HTTP::Status::SEE_OTHER
+      response.headers["location"].should eq "/"
+    end
+
+    it "redirects to a URI" do
+      response = Armature::Route::Response.new(HTTP::Server::Response.new(IO::Memory.new))
+      uri = URI.parse("https://example.com/foo?bar=baz")
+
+      response.redirect uri
+
+      response.status.should eq HTTP::Status::SEE_OTHER
+      response.headers["location"].should eq "https://example.com/foo?bar=baz"
+    end
   end
 end
 

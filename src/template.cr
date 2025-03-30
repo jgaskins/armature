@@ -145,8 +145,6 @@ module Armature::Template
     token = lexer.next_token
 
     String.build do |str|
-      output_block_level = 0
-      sanitize_block_stack = [] of Bool
       while true
         case token.type
         in .string?
@@ -189,35 +187,22 @@ module Armature::Template
           token = lexer.next_token
 
           suppress_trailing_whitespace(token, suppress_trailing)
-          output_block_level += 1
-          str.puts "# begin output block"
           str << "#<loc:push>"
           append_loc(str, filename, line_number, column_number)
-          str << variable(output_block_level) << " = "
           # If they used <%|== safe_content do %>, we can just use that
           if string.starts_with? '='
-            str.puts "# safe"
             # Write all but the first byte to the buffer, but without allocating
             # another string to do it.
             str.write string.to_slice + 1
-            sanitize_block_stack << false
           else
             raise "HTML sanitization for block capture is not yet supported."
             str << string
-            sanitize_block_stack << true
           end
         in .end_output_block?
           string = token.value
           token = lexer.next_token
-          str.puts "# end output block"
           str.puts "#<loc:pop>"
           str.puts string
-          if sanitize_block_stack.pop
-            str << "::Armature::Template::HTML::SanitizableValue.new(" << variable(output_block_level) << ')'
-          else
-            str << variable(output_block_level)
-          end
-          output_block_level -= 1
           str << ".to_s " << buffer_name << '\n'
         in .control?
           string = token.value
@@ -239,10 +224,6 @@ module Armature::Template
         end
       end
     end
-  end
-
-  private macro variable(name)
-    "{{name}}_#{{{name}}}"
   end
 
   private def suppress_leading_indentation(token, string)

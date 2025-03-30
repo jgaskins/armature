@@ -44,7 +44,7 @@ module Armature
         context.original_request_path
       end
 
-      def root
+      def root(&)
         return if handled?
 
         is { yield }
@@ -76,7 +76,7 @@ module Armature
 
       handle_method get, post, put, patch, delete
 
-      def is
+      def is(&)
         return if handled?
 
         if path == "" || path == "/"
@@ -93,7 +93,7 @@ module Armature
         end
       end
 
-      def is(*segments)
+      def is(*segments, &)
         return if handled?
 
         on(*segments) do |*captures|
@@ -104,7 +104,7 @@ module Armature
         end
       end
 
-      def on(*segments)
+      def on(*segments, &)
         return if handled?
 
         on segments do |captures|
@@ -112,7 +112,7 @@ module Armature
         end
       end
 
-      private def on(segments : Tuple(*T)) forall T
+      private def on(segments : Tuple(*T), &) forall T
         {% begin %}
           path = original_request.path
           original_path = path
@@ -122,9 +122,28 @@ module Armature
               {% for i in 0...T.size %}
                 begin
                   %matcher{i} = segments[{{i}}]
-                  if (%match{i} = %r(\A/?[^/]+).match path.lchop('/')) && (%result{i} = match?(%match{i}[0], %matcher{i}))
-                    path = path.sub(%r(\A/?#{%match{i}[0]}), "")
-                    %result{i}
+                  path = path.lchop('/')
+                  if %matcher{i}.is_a?(String)
+                    %matcher{i} = %matcher{i}.lchop('/')
+                    if path.starts_with?(%matcher{i})
+                      segment = %matcher{i}
+                      path = path.lchop(segment)
+                    end
+                    segment
+                  else
+                    if slash_index = path.index('/')
+                      segment = path[0...slash_index]
+                    else
+                      segment = path
+                    end
+                    if (%match{i} = segment.presence) && (%result{i} = match?(%match{i}, %matcher{i}))
+                      if segment == path
+                        path = ""
+                      else
+                        path = path.lchop(segment)
+                      end
+                      %result{i}
+                    end
                   end
                 end,
               {% end %}
@@ -146,7 +165,7 @@ module Armature
         {% end %}
       end
 
-      def on(**segments)
+      def on(**segments, &)
         on *segments.values do |*args|
           yield *args
         end
@@ -154,6 +173,12 @@ module Armature
 
       def match?(segment : String, matcher)
         matcher === segment
+      end
+
+      def match?(segment : String, matcher : String)
+        if matcher.starts_with? segment
+          segment
+        end
       end
 
       {% for type in %w[Int UInt] %}
@@ -176,7 +201,7 @@ module Armature
         matcher.match segment
       end
 
-      def params(*params)
+      def params(*params, &)
         return if handled?
         return if !params.all? { |param| original_request.query_params.has_key? param }
 
@@ -187,7 +212,7 @@ module Armature
         end
       end
 
-      def miss
+      def miss(&)
         return if handled?
 
         begin
@@ -230,9 +255,9 @@ module Armature
       def initialize(@response)
       end
 
-      def redirect(path, status : HTTP::Status = :see_other)
+      def redirect(path : String | URI, status : HTTP::Status = :see_other)
         self.status = status
-        @response.headers["Location"] = path
+        @response.headers["Location"] = path.to_s
       end
 
       def json(serializer)
@@ -266,16 +291,25 @@ module Armature
   end
 end
 
+require "http/server/context"
+
 # :nodoc:
-module HTTP
-  class Server::Context
+class HTTP::Server
+  # Instances of this class are passed to an `HTTP::Server` handler.
+  class Context
+    # The `HTTP::Request` to process.
+    getter request : Request
+
+    # The `HTTP::Server::Response` to configure and write to.
+    getter response : Response
+
     # We mutate the request path as we traverse the routing tree so we need to
     # be able to know the original path.
     property! original_request_path : String
     getter? handled = false
 
-    def initialize(request, response)
-      previous_def
+    # :nodoc:
+    def initialize(@request : Request, @response : Response)
       @original_request_path = request.path
     end
 
