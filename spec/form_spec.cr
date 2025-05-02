@@ -36,10 +36,8 @@ struct FormTestRoute
   end
 end
 
-redis = Redis::Client.new
 redis_store = Armature::Session::RedisStore.new(
   key: "armature-test",
-  redis: redis,
   expiration: 1.minute,
 )
 
