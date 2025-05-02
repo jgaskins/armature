@@ -1,5 +1,10 @@
 require "html"
 
+# `Armature::Template` is very similar `ECR` (and is, in fact, derived from it),
+# but whereas `ECR` is designed to be flexible enough for any kind of output,
+# `Armature::Template` is specific to HTML. It supports automatic sanitization
+# for HTML output within `<%= ... %>` blocks, but allows raw output using
+# `<%== ... %>` blocks — note the `=` vs `==` distinction.
 module Armature::Template
   extend self
 
@@ -8,19 +13,19 @@ module Armature::Template
   # Defines a `to_s(io)` method whose body is the ECR contained
   # in *filename*, translated to Crystal code.
   #
-  # ```text
+  # ```html
   # # greeting.ecr
   # Hello <%= @name %>!
   # ```
   #
   # ```
-  # require "ecr/macros"
+  # require "armature/template"
   #
   # class Greeting
   #   def initialize(@name : String)
   #   end
   #
-  #   ECR.def_to_s "greeting.ecr"
+  #   Armature::Template.def_to_s "greeting.ecr"
   # end
   #
   # Greeting.new("World").to_s # => "Hello World!"
@@ -50,7 +55,7 @@ module Armature::Template
   # The generated code is the result of translating the contents of
   # the ECR file to Crystal, a program that appends to an IO.
   #
-  # ```text
+  # ```html
   # # greeting.ecr
   # Hello <%= name %>!
   # ```
@@ -61,15 +66,15 @@ module Armature::Template
   # name = "World"
   #
   # io = IO::Memory.new
-  # ECR.embed "greeting.ecr", io
+  # Armature::Template.embed "greeting.ecr", io
   # io.to_s # => "Hello World!"
   # ```
   #
-  # The `ECR.embed` line basically generates this Crystal code:
+  # The `Armature::Template.embed` line basically generates this Crystal code:
   #
   # ```
   # io << "Hello "
-  # io << name
+  # HTML.escape name, io
   # io << '!'
   # ```
   macro embed(filename, io_name)
@@ -81,7 +86,7 @@ module Armature::Template
   # The generated code is the result of translating the contents of
   # the ECR file to Crystal, a program that appends to an IO and returns a string.
   #
-  # ```text
+  # ```html
   # # greeting.ecr
   # Hello <%= name %>!
   # ```
@@ -91,16 +96,16 @@ module Armature::Template
   #
   # name = "World"
   #
-  # rendered = ECR.render "greeting.ecr"
+  # rendered = Armature::Template.render "greeting.ecr"
   # rendered # => "Hello World!"
   # ```
   #
-  # The `ECR.render` basically generates this Crystal code:
+  # The `Armature::Template.render` basically generates this Crystal code:
   #
   # ```
   # String.build do |io|
   #   io << "Hello "
-  #   io << name
+  #   HTML.escape name, io
   #   io << '!'
   # end
   # ```
@@ -110,6 +115,9 @@ module Armature::Template
     end
   end
 
+  # `Armature::Template` uses `HTML::SanitizableValue` and `HTML::SafeValue` to
+  # determine whether to perform HTML sanitization on Crystal expressions within
+  # `<%= ... %>` blocks.
   module HTML
     struct SanitizableValue(T)
       def initialize(@value : T)

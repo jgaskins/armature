@@ -261,11 +261,30 @@
 <div class="main-content">
 <h1 class="type-name">
 
-  <span class="kind">module</span> Armature::<wbr>Template
+  <span class="kind">
+    module
+  </span> Armature::<wbr>Template
 
 </h1>
 
 
+
+
+
+  <h2>
+    <a id="overview" class="anchor" href="#overview">
+  <svg class="octicon-link" aria-hidden="true">
+    <use href="#octicon-link"/>
+  </svg>
+</a>
+    Overview
+  </h2>
+
+  <p><code><a href="../Armature/Template.html">Armature::Template</a></code> is very similar <code>ECR</code> (and is, in fact, derived from it),
+but whereas <code>ECR</code> is designed to be flexible enough for any kind of output,
+<code><a href="../Armature/Template.html">Armature::Template</a></code> is specific to HTML. It supports automatic sanitization
+for HTML output within <code>&lt;%= ... %&gt;</code> blocks, but allows raw output using
+<code>&lt;%== ... %&gt;</code> blocks — note the <code>=</code> vs <code>==</code> distinction.</p>
 
 
 
@@ -306,7 +325,7 @@
   </h2>
   
     
-      <a href="https://github.com/jgaskins/armature/blob/v0.4.3/src/template.cr#L3" target="_blank">
+      <a href="https://github.com/jgaskins/armature/blob/v0.4.3/src/template.cr#L8" target="_blank">
         template.cr
       </a>
     
@@ -336,10 +355,11 @@
 
 
 
+  
 
+  
 
-
-
+  
   <h2>
     <a id="macro-summary" class="anchor" href="#macro-summary">
   <svg class="octicon-link" aria-hidden="true">
@@ -374,18 +394,18 @@
   </ul>
 
 
-
-
-
-<div class="methods-inherited">
   
-</div>
 
 
+  <div class="methods-inherited">
+    
+  </div>
 
+  
 
+  
 
-
+  
   <h2>
     <a id="macro-detail" class="anchor" href="#macro-detail">
   <svg class="octicon-link" aria-hidden="true">
@@ -407,15 +427,15 @@
           
           <p>Defines a <code>to_s(io)</code> method whose body is the ECR contained
 in <em>filename</em>, translated to Crystal code.</p>
-<pre><code class="language-text"># greeting.ecr
+<pre><code class="language-html"># greeting.ecr
 Hello &lt;%= @name %&gt;!</code></pre>
-<pre><code class="language-crystal"><span class="k">require</span> <span class="s">&quot;ecr/macros&quot;</span>
+<pre><code class="language-crystal"><span class="k">require</span> <span class="s">&quot;armature/template&quot;</span>
 
 <span class="k">class</span> <span class="t">Greeting</span>
   <span class="k">def</span> <span class="m">initialize</span>(@name : <span class="t">String</span>)
   <span class="k">end</span>
 
-  <span class="t">ECR</span>.def_to_s <span class="s">&quot;greeting.ecr&quot;</span>
+  <span class="t">Armature</span><span class="t">::</span><span class="t">Template</span>.def_to_s <span class="s">&quot;greeting.ecr&quot;</span>
 <span class="k">end</span>
 
 <span class="t">Greeting</span>.new(<span class="s">&quot;World&quot;</span>).to_s <span class="c"># =&gt; &quot;Hello World!&quot;</span></code></pre>
@@ -433,7 +453,7 @@ to Crystal code that appends to the IO:</p>
       <br/>
       <div>
         
-          [<a href="https://github.com/jgaskins/armature/blob/v0.4.3/src/template.cr#L41" target="_blank">View source</a>]
+          [<a href="https://github.com/jgaskins/armature/blob/v0.4.3/src/template.cr#L46" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -452,25 +472,25 @@ to Crystal code that appends to the IO:</p>
 an IO in the variable <em>io_name</em>.</p>
 <p>The generated code is the result of translating the contents of
 the ECR file to Crystal, a program that appends to an IO.</p>
-<pre><code class="language-text"># greeting.ecr
+<pre><code class="language-html"># greeting.ecr
 Hello &lt;%= name %&gt;!</code></pre>
 <pre><code class="language-crystal"><span class="k">require</span> <span class="s">&quot;ecr/macros&quot;</span>
 
 name <span class="o">=</span> <span class="s">&quot;World&quot;</span>
 
 io <span class="o">=</span> <span class="t">IO</span><span class="t">::</span><span class="t">Memory</span>.new
-<span class="t">ECR</span>.embed <span class="s">&quot;greeting.ecr&quot;</span>, io
+<span class="t">Armature</span><span class="t">::</span><span class="t">Template</span>.embed <span class="s">&quot;greeting.ecr&quot;</span>, io
 io.to_s <span class="c"># =&gt; &quot;Hello World!&quot;</span></code></pre>
-<p>The <code>ECR.embed</code> line basically generates this Crystal code:</p>
+<p>The <code><a href="../Armature/Template.html#embed%28filename%2Cio_name%29-macro">Armature::Template.embed</a></code> line basically generates this Crystal code:</p>
 <pre><code class="language-crystal">io <span class="o">&lt;&lt;</span> <span class="s">&quot;Hello &quot;</span>
-io <span class="o">&lt;&lt;</span> name
+<span class="t">HTML</span>.escape name, io
 io <span class="o">&lt;&lt;</span> <span class="s">&#39;!&#39;</span></code></pre>
         </div>
       
       <br/>
       <div>
         
-          [<a href="https://github.com/jgaskins/armature/blob/v0.4.3/src/template.cr#L75" target="_blank">View source</a>]
+          [<a href="https://github.com/jgaskins/armature/blob/v0.4.3/src/template.cr#L80" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -488,18 +508,18 @@ io <span class="o">&lt;&lt;</span> <span class="s">&#39;!&#39;</span></code></pr
           <p>Embeds an ECR file <em>filename</em> into the program and renders it to a string.</p>
 <p>The generated code is the result of translating the contents of
 the ECR file to Crystal, a program that appends to an IO and returns a string.</p>
-<pre><code class="language-text"># greeting.ecr
+<pre><code class="language-html"># greeting.ecr
 Hello &lt;%= name %&gt;!</code></pre>
 <pre><code class="language-crystal"><span class="k">require</span> <span class="s">&quot;ecr/macros&quot;</span>
 
 name <span class="o">=</span> <span class="s">&quot;World&quot;</span>
 
-rendered <span class="o">=</span> <span class="t">ECR</span>.render <span class="s">&quot;greeting.ecr&quot;</span>
+rendered <span class="o">=</span> <span class="t">Armature</span><span class="t">::</span><span class="t">Template</span>.render <span class="s">&quot;greeting.ecr&quot;</span>
 rendered <span class="c"># =&gt; &quot;Hello World!&quot;</span></code></pre>
-<p>The <code>ECR.render</code> basically generates this Crystal code:</p>
+<p>The <code><a href="../Armature/Template.html#render%28filename%29-macro">Armature::Template.render</a></code> basically generates this Crystal code:</p>
 <pre><code class="language-crystal"><span class="t">String</span>.build <span class="k">do</span> <span class="o">|</span>io<span class="o">|</span>
   io <span class="o">&lt;&lt;</span> <span class="s">&quot;Hello &quot;</span>
-  io <span class="o">&lt;&lt;</span> name
+  <span class="t">HTML</span>.escape name, io
   io <span class="o">&lt;&lt;</span> <span class="s">&#39;!&#39;</span>
 <span class="k">end</span></code></pre>
         </div>
@@ -507,13 +527,14 @@ rendered <span class="c"># =&gt; &quot;Hello World!&quot;</span></code></pre>
       <br/>
       <div>
         
-          [<a href="https://github.com/jgaskins/armature/blob/v0.4.3/src/template.cr#L107" target="_blank">View source</a>]
+          [<a href="https://github.com/jgaskins/armature/blob/v0.4.3/src/template.cr#L112" target="_blank">View source</a>]
         
       </div>
     </div>
   
 
 
+  
 
 
 </div>
