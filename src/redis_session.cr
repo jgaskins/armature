@@ -16,6 +16,8 @@ module Armature
         key : String,
         @redis = Redis::Client.new,
         @expiration = 2.weeks,
+        @http_only : Bool = true,
+        @path : String? = "/",
         @log = Log.for("armature.session")
       )
         super key
@@ -32,7 +34,11 @@ module Armature
         call_next context
 
         if session.modified? || !session.new?
-          context.response.cookies << HTTP::Cookie.new(@key, session_id, expires: @expiration.try(&.from_now))
+          context.response.cookies << HTTP::Cookie.new @key, session_id,
+            path: @path,
+            expires: @expiration.try(&.from_now),
+            http_only: @http_only
+
           save "#{@key}-#{session_id}", session.as(Session)
         end
       end
