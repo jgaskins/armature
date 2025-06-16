@@ -1,5 +1,10 @@
-require "http"
+require "http/server/context"
+require "http/server/response"
+require "http/request"
+require "http/status"
 require "json"
+require "uri"
+require "uuid"
 
 require "./template"
 require "./session"
@@ -297,12 +302,6 @@ require "http/server/context"
 class HTTP::Server
   # Instances of this class are passed to an `HTTP::Server` handler.
   class Context
-    # The `HTTP::Request` to process.
-    getter request : Request
-
-    # The `HTTP::Server::Response` to configure and write to.
-    getter response : Response
-
     # We mutate the request path as we traverse the routing tree so we need to
     # be able to know the original path.
     property! original_request_path : String

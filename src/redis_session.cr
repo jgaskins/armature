@@ -1,7 +1,8 @@
 require "redis"
 require "uuid"
 require "json"
-require "http"
+require "http/cookie"
+require "http/server/context"
 
 require "./session"
 

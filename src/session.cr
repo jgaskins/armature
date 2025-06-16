@@ -1,4 +1,5 @@
-require "http"
+require "http/cookies"
+require "http/server/handler"
 
 module Armature
   abstract class Session
