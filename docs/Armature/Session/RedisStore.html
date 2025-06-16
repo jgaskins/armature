@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Crystal Docs 1.10.1">
-<meta name="crystal_docs.project_version" content="0.4.3">
+<meta name="crystal_docs.project_version" content="0.4.4">
 <meta name="crystal_docs.project_name" content="armature">
 
 
@@ -14,7 +14,7 @@
 <script type="text/javascript" src="../../js/doc.js"></script>
 
   <meta name="repository-name" content="armature">
-  <title>Armature::Session::RedisStore - armature 0.4.3</title>
+  <title>Armature::Session::RedisStore - armature 0.4.4</title>
   <script type="text/javascript">
     CrystalDocs.base_path = "../../";
   </script>
@@ -45,7 +45,7 @@
       </h1>
 
       <span class="project-version">
-        0.4.3
+        0.4.4
       </span>
     </div>
   </div>
@@ -298,7 +298,7 @@
   </h2>
   
     
-      <a href="https://github.com/jgaskins/armature/blob/v0.4.3/src/redis_session.cr#L10" target="_blank">
+      <a href="https://github.com/jgaskins/armature/blob/v0.4.4/src/redis_session.cr#L11" target="_blank">
         redis_session.cr
       </a>
     
@@ -321,7 +321,7 @@
   <ul class="list-summary">
     
       <li class="entry-summary">
-        <a href="#new%28key%3AString%2Credis%3ARedis%3A%3AClient%3DRedis%3A%3AClient.new%2Cexpiration%3ATime%3A%3ASpan%7CNil%3D2.weeks%2Clog%3ALog%3DLog.for%28%22armature.session%22%29%29-class-method" class="signature"><strong>.new</strong>(key : String, redis : Redis::Client = <span class="t">Redis</span><span class="t">::</span><span class="t">Client</span>.new, expiration : Time::Span | Nil = <span class="n">2</span>.weeks, log : Log = <span class="t">Log</span>.<span class="k">for</span>(<span class="s">&quot;armature.session&quot;</span>))</a>
+        <a href="#new%28key%3AString%2Credis%3ARedis%3A%3AClient%3DRedis%3A%3AClient.new%2Cexpiration%3ATime%3A%3ASpan%7CNil%3D2.weeks%2Chttp_only%3ABool%3Dtrue%2Cpath%3AString%7CNil%3D%22/%22%2Clog%3ALog%3DLog.for%28%22armature.session%22%29%29-class-method" class="signature"><strong>.new</strong>(key : String, redis : Redis::Client = <span class="t">Redis</span><span class="t">::</span><span class="t">Client</span>.new, expiration : Time::Span | Nil = <span class="n">2</span>.weeks, http_only : Bool = <span class="n">true</span>, path : String | Nil = <span class="s">&quot;/&quot;</span>, log : Log = <span class="t">Log</span>.<span class="k">for</span>(<span class="s">&quot;armature.session&quot;</span>))</a>
         
       </li>
     
@@ -451,18 +451,18 @@
     Constructor Detail
   </h2>
   
-    <div class="entry-detail" id="new(key:String,redis:Redis::Client=Redis::Client.new,expiration:Time::Span|Nil=2.weeks,log:Log=Log.for(&quot;armature.session&quot;))-class-method">
+    <div class="entry-detail" id="new(key:String,redis:Redis::Client=Redis::Client.new,expiration:Time::Span|Nil=2.weeks,http_only:Bool=true,path:String|Nil=&quot;/&quot;,log:Log=Log.for(&quot;armature.session&quot;))-class-method">
       <div class="signature">
         
-        def self.<strong>new</strong>(key : String, redis : Redis::Client = <span class="t">Redis</span><span class="t">::</span><span class="t">Client</span>.new, expiration : Time::Span | Nil = <span class="n">2</span>.weeks, log : Log = <span class="t">Log</span>.<span class="k">for</span>(<span class="s">&quot;armature.session&quot;</span>))
+        def self.<strong>new</strong>(key : String, redis : Redis::Client = <span class="t">Redis</span><span class="t">::</span><span class="t">Client</span>.new, expiration : Time::Span | Nil = <span class="n">2</span>.weeks, http_only : Bool = <span class="n">true</span>, path : String | Nil = <span class="s">&quot;/&quot;</span>, log : Log = <span class="t">Log</span>.<span class="k">for</span>(<span class="s">&quot;armature.session&quot;</span>))
 
-        <a class="method-permalink" href="#new%28key%3AString%2Credis%3ARedis%3A%3AClient%3DRedis%3A%3AClient.new%2Cexpiration%3ATime%3A%3ASpan%7CNil%3D2.weeks%2Clog%3ALog%3DLog.for%28%22armature.session%22%29%29-class-method">#</a>
+        <a class="method-permalink" href="#new%28key%3AString%2Credis%3ARedis%3A%3AClient%3DRedis%3A%3AClient.new%2Cexpiration%3ATime%3A%3ASpan%7CNil%3D2.weeks%2Chttp_only%3ABool%3Dtrue%2Cpath%3AString%7CNil%3D%22/%22%2Clog%3ALog%3DLog.for%28%22armature.session%22%29%29-class-method">#</a>
       </div>
       
       <br/>
       <div>
         
-          [<a href="https://github.com/jgaskins/armature/blob/v0.4.3/src/redis_session.cr#L15" target="_blank">View source</a>]
+          [<a href="https://github.com/jgaskins/armature/blob/v0.4.4/src/redis_session.cr#L16" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -494,7 +494,7 @@
       <br/>
       <div>
         
-          [<a href="https://github.com/jgaskins/armature/blob/v0.4.3/src/redis_session.cr#L24" target="_blank">View source</a>]
+          [<a href="https://github.com/jgaskins/armature/blob/v0.4.4/src/redis_session.cr#L27" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -510,7 +510,7 @@
       <br/>
       <div>
         
-          [<a href="https://github.com/jgaskins/armature/blob/v0.4.3/src/redis_session.cr#L11" target="_blank">View source</a>]
+          [<a href="https://github.com/jgaskins/armature/blob/v0.4.4/src/redis_session.cr#L12" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -526,7 +526,7 @@
       <br/>
       <div>
         
-          [<a href="https://github.com/jgaskins/armature/blob/v0.4.3/src/redis_session.cr#L40" target="_blank">View source</a>]
+          [<a href="https://github.com/jgaskins/armature/blob/v0.4.4/src/redis_session.cr#L47" target="_blank">View source</a>]
         
       </div>
     </div>
@@ -542,7 +542,7 @@
       <br/>
       <div>
         
-          [<a href="https://github.com/jgaskins/armature/blob/v0.4.3/src/redis_session.cr#L51" target="_blank">View source</a>]
+          [<a href="https://github.com/jgaskins/armature/blob/v0.4.4/src/redis_session.cr#L58" target="_blank">View source</a>]
         
       </div>
     </div>
