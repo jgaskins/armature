@@ -62,6 +62,12 @@ module Armature
         </div>
         EOF
     end
+
+    it "handles case statements" do
+      rendered = Template.render "spec/support/case.ecr"
+
+      rendered.strip.gsub(/\s+/m, ' ').should eq "zero one 2"
+    end
   end
 
   private struct ListExample(T)

@@ -151,6 +151,7 @@ module Armature::Template
   def process_string(string, filename, buffer_name = DefaultBufferName) : String
     lexer = Lexer.new string
     token = lexer.next_token
+    in_case_statement = false
 
     String.build do |str|
       while true
@@ -161,10 +162,13 @@ module Armature::Template
 
           string = suppress_leading_indentation(token, string)
 
-          str << buffer_name
-          str << " << "
-          string.inspect str
-          str << '\n'
+          # Support case statements
+          if string.presence || !in_case_statement
+            str << buffer_name
+            str << " << "
+            string.inspect str
+            str << '\n'
+          end
         in .output?
           string = token.value
           line_number = token.line_number
@@ -214,6 +218,7 @@ module Armature::Template
           str << ".to_s " << buffer_name << '\n'
         in .control?
           string = token.value
+          in_case_statement = string.lstrip.starts_with? "case "
           line_number = token.line_number
           column_number = token.column_number
           suppress_trailing = token.suppress_trailing?
