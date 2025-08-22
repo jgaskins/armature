@@ -146,25 +146,44 @@ describe Armature::Route do
     match.should eq "bar"
   end
 
-  it "matches requests to dynamic routes with types" do
+  it "matches requests to dynamic routes with positional types" do
     match = nil
 
     route = RouteTest.new do |r, response, session|
       r.on "foo" do
-        r.on id: Int64 do |id|
+        r.on Int64 do |id|
           match = id
         end
-        r.on id: UUID do |id|
+        r.on UUID do |id|
           match = id
         end
-        r.on id: /@(\w+)/ do |id|
+        r.on /@(\w+)/ do |id|
           match = id
         end
-        r.on foo: RouteTest::CaseInsensitive.new("hello") do |id|
+        r.on RouteTest::CaseInsensitive.new("hello") do |id|
           match = id
         end
       end
     end
+
+    route.call make_context(path: "/foo/123")
+    match.should be_a Int64
+
+    route.call make_context(path: "/foo/#{UUID.random}")
+    match.should be_a UUID
+
+    route.call make_context(path: "/foo/@jamie")
+    match.should be_a Regex::MatchData
+    match.as(Regex::MatchData)[1].should eq "jamie"
+
+    route.call make_context(path: "/foo/hello")
+    match.should eq "hello"
+
+    route.call make_context(path: "/foo/HELLO")
+    match.should eq "HELLO"
+
+    route.call make_context(path: "/foo/hello/omg")
+    match.should eq "hello"
   end
 
   it "matches requests to dynamic routes with named types" do
