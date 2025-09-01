@@ -12,8 +12,8 @@ require "./session"
 module Armature
   module Route
     def route(context, &block : Request, Response, Armature::Session ->)
-      response = Response.new(context)
-      request = Request.new(context)
+      response = context.armature_response
+      request = context.armature_request
 
       yield request, response, context.session
     end
@@ -219,6 +219,7 @@ module Armature
 
       def miss(&)
         return if handled?
+        return unless response.status.ok?
 
         begin
           yield
@@ -306,6 +307,12 @@ class HTTP::Server
     # be able to know the original path.
     property! original_request_path : String
     getter? handled = false
+    getter armature_response : Armature::Route::Response do
+      Armature::Route::Response.new(response)
+    end
+    getter armature_request : Armature::Route::Request do
+      Armature::Route::Request.new(self)
+    end
 
     # :nodoc:
     def initialize(@request : Request, @response : Response)

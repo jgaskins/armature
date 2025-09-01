@@ -372,6 +372,34 @@ describe Armature::Route do
     path.should eq "comments"
   end
 
+  it "invokes a miss block if the request has not reached an endpoint" do
+    missed = false
+    route = RouteTest.new do |r, response, session|
+      r.root { r.get { } }
+
+      r.miss { missed = true }
+    end
+
+    route.call make_context(path: "/")
+    missed.should eq false
+
+    route.call make_context(path: "/foo")
+    missed.should eq true
+  end
+
+  it "does not invoke the miss block if the response status has been set to a non-200 value" do
+    missed = false
+    route = RouteTest.new do |r, response, session|
+      response.status = :forbidden
+
+      r.miss { missed = true }
+    end
+
+    route.call make_context(path: "/")
+
+    missed.should eq false
+  end
+
   describe Armature::Route::Response do
     it "redirects to a string URL" do
       response = Armature::Route::Response.new(HTTP::Server::Response.new(IO::Memory.new))
