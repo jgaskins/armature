@@ -27,7 +27,7 @@ module Armature
     end
 
     class Request
-      delegate headers, path, :headers=, cookies, body, method, to: original_request
+      delegate headers, path, :headers=, cookies, body, method, resource, to: original_request
 
       getter context : HTTP::Server::Context
       getter original_request : HTTP::Request { context.request }
