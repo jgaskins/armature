@@ -136,18 +136,24 @@ module Armature
                     end
                     segment
                   else
-                    if slash_index = path.index('/')
-                      segment = path[0...slash_index]
-                    else
-                      segment = path
-                    end
-                    if (%match{i} = segment.presence) && (%result{i} = match?(%match{i}, %matcher{i}))
-                      if segment == path
-                        path = ""
-                      else
-                        path = path.lchop(segment)
+                    if %matcher{i}.responds_to? :matches_request?
+                      if %result{i} = %matcher{i}.matches_request? self
+                        %result{i}
                       end
-                      %result{i}
+                    else
+                      if slash_index = path.index('/')
+                        segment = path[0...slash_index]
+                      else
+                        segment = path
+                      end
+                      if (%match{i} = segment.presence) && (%result{i} = match?(%match{i}, %matcher{i}))
+                        if segment == path
+                          path = ""
+                        else
+                          path = path.lchop(segment)
+                        end
+                        %result{i}
+                      end
                     end
                   end
                 end,

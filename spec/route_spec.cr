@@ -26,6 +26,12 @@ class RouteTest
       end
     end
   end
+
+  record FullPathMatcher, regex : Regex do
+    def matches_request?(request)
+      request.path.match(regex)
+    end
+  end
 end
 
 describe Armature::Route do
@@ -370,6 +376,18 @@ describe Armature::Route do
     end.call make_context(path: "posts/123/comments/")
 
     path.should eq "comments"
+  end
+
+  it "allows passing an object that responds to `matches_request?`" do
+    post_id = nil
+
+    RouteTest.new do |r, response, session|
+      r.on RouteTest::FullPathMatcher.new(%r{posts/(\d+)/comments}) do |(_, id)|
+        post_id = id.to_i
+      end
+    end.call make_context(path: "posts/123/comments/")
+
+    post_id.should eq 123
   end
 
   it "invokes a miss block if the request has not reached an endpoint" do
