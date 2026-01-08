@@ -218,7 +218,11 @@ module Armature::Template
           str << ".to_s " << buffer_name << '\n'
         in .control?
           string = token.value
-          in_case_statement = string.lstrip.starts_with? "case "
+          # The `case` and `select` constructs have very similar syntax, so
+          # we'll treat them the same.
+          in_case_statement = string.lstrip.starts_with?("case ") ||
+                              string.strip == "case" ||
+                              string.strip == "select"
           line_number = token.line_number
           column_number = token.column_number
           suppress_trailing = token.suppress_trailing?
