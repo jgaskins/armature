@@ -13,6 +13,6 @@ development_dependencies:
   armature:
     path: .
 
-crystal: 1.0.0
+crystal: 1.16.0
 
 license: MIT

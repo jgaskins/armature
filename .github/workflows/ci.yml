@@ -12,7 +12,6 @@ jobs:
       fail-fast: false
       matrix:
         crystal:
-          - 1.15.1
           - 1.16.3
           - 1.17.1
           - latest
