@@ -3,7 +3,11 @@ require "http/server/handler"
 
 module Armature
   abstract class Session
-    def initialize(@store : Store, @cookies : HTTP::Cookies)
+    getter store : Store
+    getter id : String
+    getter cookies : HTTP::Cookies
+
+    def initialize(@store, @id, @cookies)
     end
 
     abstract def [](key : String)
@@ -23,7 +27,7 @@ module Armature
   end
 
   class BlankSession < Session
-    def initialize(@store, @cookies)
+    def initialize(@store, @id, @cookies)
     end
 
     def [](key)
@@ -52,17 +56,12 @@ end
 module HTTP
   class Server
     class Context
-      @session : Armature::Session?
-
-      def session : Armature::Session
-        @session ||= Armature::BlankSession.new(
+      property session : Armature::Session do
+        Armature::BlankSession.new(
           store: Armature::BlankSession::Store.new(""),
+          id: UUID.v7.to_s,
           cookies: self.request.cookies,
         )
-      end
-
-      def session=(session : Armature::Session) : Nil
-        @session = session
       end
     end
   end

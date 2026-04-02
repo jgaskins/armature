@@ -25,12 +25,12 @@ module Armature
       end
 
       def call(context : HTTP::Server::Context)
-        session = Session.new(self, context.request.cookies)
-        context.session = session
-
         unless session_id = context.request.cookies[@key]?.try(&.value)
-          session_id = UUID.random.to_s
+          session_id = UUID.v7.to_s
         end
+
+        session = Session.new(self, session_id, context.request.cookies)
+        context.session = session
 
         call_next context
 
