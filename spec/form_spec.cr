@@ -9,7 +9,6 @@ private macro make_response_and_session
   %session_id = UUID.random.to_s
   %session = Armature::Session::RedisStore::Session.new(
     store: redis_store,
-    id: %session_id,
     cookies: HTTP::Cookies{"armature-test" => %session_id},
   )
 
@@ -100,7 +99,6 @@ describe Armature::Form do
     session_id = UUID.random.to_s
     session = Armature::Session::RedisStore::Session.new(
       store: redis_store,
-      id: session_id,
       cookies: HTTP::Cookies{"armature-test" => session_id},
     )
     # Generate the CSRF token

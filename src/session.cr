@@ -7,6 +7,14 @@ module Armature
     getter id : String
     getter cookies : HTTP::Cookies
 
+    def self.new(store : Store, cookies : HTTP::Cookies)
+      new(
+        store: store,
+        cookies: cookies,
+        id: UUID.v7.to_s,
+      )
+    end
+
     def initialize(@store, @id, @cookies)
     end
 
@@ -27,9 +35,6 @@ module Armature
   end
 
   class BlankSession < Session
-    def initialize(@store, @id, @cookies)
-    end
-
     def [](key)
     end
 
@@ -59,7 +64,6 @@ module HTTP
       property session : Armature::Session do
         Armature::BlankSession.new(
           store: Armature::BlankSession::Store.new(""),
-          id: UUID.v7.to_s,
           cookies: self.request.cookies,
         )
       end
