@@ -234,8 +234,20 @@ module Armature
         end
       end
 
+      def html(&)
+        yield if html?
+      end
+
+      def html?
+        headers["Accept"]?.try &.includes? "text/html"
+      end
+
+      def json(&)
+        yield if json?
+      end
+
       def json?
-        path.ends_with?("json") || headers["Content-Type"]? =~ /json/ || headers["Accept"]? =~ /json/
+        path.ends_with?("json") || headers["Content-Type"]?.try(&.includes?("json")) || headers["Accept"]?.try(&.includes?("json"))
       end
 
       def url : URI
