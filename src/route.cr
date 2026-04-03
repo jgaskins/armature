@@ -272,14 +272,13 @@ module Armature
         @response.headers["Location"] = path.to_s
       end
 
-      def json(serializer)
-        @response.headers["Content-Type"] = "application/json"
-        serializer.to_json @response
+      def json(**stuff)
+        json stuff
       end
 
-      def json(**stuff)
-        @response.headers["Content-Type"] = "application/json"
-        stuff.to_json @response
+      def json(serializer)
+        @response.headers["Content-Type"] ||= "application/json"
+        serializer.to_json @response
       end
 
       def status=(status : HTTP::Status)
