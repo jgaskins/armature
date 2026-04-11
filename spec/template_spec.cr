@@ -1,4 +1,5 @@
 require "./spec_helper"
+require "xml"
 
 require "../src/template"
 
@@ -42,6 +43,31 @@ module Armature
         </ul>
         EOF
     end
+
+    it "handles nested interpolation with blocks" do
+      rendered = Template.render "spec/support/interpolate_nested_block.ecr"
+
+      normalize(rendered).should eq <<-EOF
+        <div>
+          outer
+          outer header
+          <div>
+          inner
+            inner stuff
+          
+        </div>
+
+          outer footer
+
+        </div>
+        EOF
+    end
+
+    it "handles case statements" do
+      rendered = Template.render "spec/support/case.ecr"
+
+      rendered.strip.gsub(/\s+/m, ' ').should eq "zero one 2"
+    end
   end
 
   private struct ListExample(T)
@@ -55,4 +81,27 @@ module Armature
       Armature::Template.embed "spec/support/list_example.ecr", io
     end
   end
+
+  private class NestedExample
+    @value : String
+
+    def initialize(@value, &@block)
+    end
+
+    def to_s(io)
+      Armature::Template.embed "spec/support/nested_example.ecr", io
+    end
+  end
+end
+
+private def normalize(rendered)
+  XML
+    .parse_html(rendered)
+    .to_xml(options: XML::SaveOptions[
+      :format,
+      :as_html,
+    ])
+    .lines[2..-2]
+    .join('\n')
+    .strip
 end

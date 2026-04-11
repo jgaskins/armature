@@ -1,5 +1,5 @@
 name: armature
-version: 0.4.0
+version: 0.5.0
 
 authors:
   - Jamie Gaskins <jgaskins@hey.com>
@@ -9,7 +9,10 @@ dependencies:
     github: jgaskins/redis
   msgpack:
     github: crystal-community/msgpack-crystal
+development_dependencies:
+  armature:
+    path: .
 
-crystal: 1.0.0
+crystal: 1.16.0
 
 license: MIT

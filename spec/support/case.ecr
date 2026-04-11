@@ -1,0 +1,10 @@
+<% 3.times do |value| %>
+  <% case value %>
+  <% when 0 %>
+    zero
+  <% when 1 %>
+    one
+  <% else %>
+    <%== value %>
+  <% end %>
+<% end %>

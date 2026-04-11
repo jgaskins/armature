@@ -1,0 +1,7 @@
+<%|== NestedExample.new "outer" do -%>
+  outer header
+  <%|== NestedExample.new "inner" do -%>
+    inner stuff
+  <%| end -%>
+  outer footer
+<%| end -%>

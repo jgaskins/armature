@@ -27,6 +27,12 @@ struct RouteTest
       end
     end
   end
+
+  record FullPathMatcher, regex : Regex do
+    def matches_request?(request)
+      request.path.match(regex)
+    end
+  end
 end
 
 struct RouteScaffoldTest
@@ -118,6 +124,8 @@ describe Armature::Route do
   end
 
   it "removes matched segments inside the block and replaces them after the block" do
+    reached_endpoint = false
+
     RouteTest.new do |r|
       r.path.should eq "/outer/inner/endpoint"
 
@@ -126,12 +134,27 @@ describe Armature::Route do
 
         r.on "inner" do
           r.path.should eq "/endpoint"
+          reached_endpoint = true
         end
 
         r.path.should eq "/inner/endpoint"
       end
 
       r.path.should eq "/outer/inner/endpoint"
+    end.call make_context(path: "/outer/inner/endpoint")
+
+    reached_endpoint.should eq true
+  end
+
+  it "tracks the original request path" do
+    RouteTest.new do |r|
+      r.on "outer" do
+        r.on "inner" do
+          r.get "endpoint" do
+            r.original_path.should eq "/outer/inner/endpoint"
+          end
+        end
+      end
     end.call make_context(path: "/outer/inner/endpoint")
   end
 
@@ -154,6 +177,18 @@ describe Armature::Route do
     count.should eq 1
   end
 
+  it "captures requests to routes with a '*'" do
+    match = nil
+
+    RouteTest.new do |r|
+      r.on :id do |id|
+        match = id
+      end
+    end.call make_context(path: "/*")
+
+    match.should eq "*"
+  end
+
   it "matches requests to dynamic routes using symbols" do
     match = nil
 
@@ -166,25 +201,44 @@ describe Armature::Route do
     match.should eq "bar"
   end
 
-  it "matches requests to dynamic routes with types" do
+  it "matches requests to dynamic routes with positional types" do
     match = nil
 
     route = RouteTest.new do |r, response, session|
       r.on "foo" do
-        r.on id: Int64 do |id|
+        r.on Int64 do |id|
           match = id
         end
-        r.on id: UUID do |id|
+        r.on UUID do |id|
           match = id
         end
-        r.on id: /@(\w+)/ do |id|
+        r.on /@(\w+)/ do |id|
           match = id
         end
-        r.on foo: RouteTest::CaseInsensitive.new("hello") do |id|
+        r.on RouteTest::CaseInsensitive.new("hello") do |id|
           match = id
         end
       end
     end
+
+    route.call make_context(path: "/foo/123")
+    match.should be_a Int64
+
+    route.call make_context(path: "/foo/#{UUID.random}")
+    match.should be_a UUID
+
+    route.call make_context(path: "/foo/@jamie")
+    match.should be_a Regex::MatchData
+    match.as(Regex::MatchData)[1].should eq "jamie"
+
+    route.call make_context(path: "/foo/hello")
+    match.should eq "hello"
+
+    route.call make_context(path: "/foo/HELLO")
+    match.should eq "HELLO"
+
+    route.call make_context(path: "/foo/hello/omg")
+    match.should eq "hello"
   end
 
   it "matches requests to dynamic routes with named types" do
@@ -222,6 +276,20 @@ describe Armature::Route do
 
     route.call make_context(path: "/foo/HELLO")
     match.should eq "HELLO"
+  end
+
+  it "matches static paths with slashes" do
+    matched = false
+
+    RouteTest.new do |r|
+      r.on "foo/bar" do
+        r.on "baz/quux" do
+          matched = true
+        end
+      end
+    end.call make_context(path: "/foo/bar/baz/quux")
+
+    matched.should eq true
   end
 
   it "matches requests to dynamic routes with multiple typed args" do
@@ -361,7 +429,7 @@ describe Armature::Route do
 
   context "scaffolding" do
     expected_id = UUID.random
-    make = ->{ RouteScaffoldTest.new(expected_id) }
+    make = -> { RouteScaffoldTest.new(expected_id) }
 
     it "scaffolds the index route" do
       route = make.call
@@ -433,6 +501,67 @@ describe Armature::Route do
       route = make.call
       route.call make_context(path: "/#{expected_id}", method: "DELETE", pass_csrf_check: false)
       route.matched.should eq nil
+    end
+  end
+
+  it "allows passing an object that responds to `matches_request?`" do
+    post_id = nil
+
+    RouteTest.new do |r, response, session|
+      r.on RouteTest::FullPathMatcher.new(%r{posts/(\d+)/comments}) do |(_, id)|
+        post_id = id.to_i
+      end
+    end.call make_context(path: "posts/123/comments/")
+
+    post_id.should eq 123
+  end
+
+  it "invokes a miss block if the request has not reached an endpoint" do
+    missed = false
+    route = RouteTest.new do |r, response, session|
+      r.root { r.get { } }
+
+      r.miss { missed = true }
+    end
+
+    route.call make_context(path: "/")
+    missed.should eq false
+
+    route.call make_context(path: "/foo")
+    missed.should eq true
+  end
+
+  it "does not invoke the miss block if the response status has been set to a non-200 value" do
+    missed = false
+    route = RouteTest.new do |r, response, session|
+      response.status = :forbidden
+
+      r.miss { missed = true }
+    end
+
+    route.call make_context(path: "/")
+
+    missed.should eq false
+  end
+
+  describe Armature::Route::Response do
+    it "redirects to a string URL" do
+      response = Armature::Route::Response.new(HTTP::Server::Response.new(IO::Memory.new))
+
+      response.redirect "/"
+
+      response.status.should eq HTTP::Status::SEE_OTHER
+      response.headers["location"].should eq "/"
+    end
+
+    it "redirects to a URI" do
+      response = Armature::Route::Response.new(HTTP::Server::Response.new(IO::Memory.new))
+      uri = URI.parse("https://example.com/foo?bar=baz")
+
+      response.redirect uri
+
+      response.status.should eq HTTP::Status::SEE_OTHER
+      response.headers["location"].should eq "https://example.com/foo?bar=baz"
     end
   end
 end

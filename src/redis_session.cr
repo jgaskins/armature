@@ -1,7 +1,8 @@
 require "redis"
 require "uuid"
 require "json"
-require "http"
+require "http/cookie"
+require "http/server/context"
 
 require "./session"
 
@@ -17,23 +18,29 @@ module Armature
         key : String,
         @redis = Redis::Client.new,
         @expiration = 2.weeks,
+        @http_only : Bool = true,
+        @path : String? = "/",
         @log = Log.for("armature.session")
       )
         super key
       end
 
       def call(context : HTTP::Server::Context)
-        session = Session.new(self, context.request.cookies)
-        context.session = session
-
         unless session_id = context.request.cookies[@key]?.try(&.value)
-          session_id = UUID.random.to_s
+          session_id = UUID.v7.to_s
         end
+
+        session = Session.new(self, session_id, context.request.cookies)
+        context.session = session
 
         call_next context
 
         if session.modified? || !session.new?
-          context.response.cookies << HTTP::Cookie.new(@key, session_id, expires: @expiration.try(&.from_now))
+          context.response.cookies << HTTP::Cookie.new @key, session_id,
+            path: @path,
+            expires: @expiration.try(&.from_now),
+            http_only: @http_only
+
           save "#{@key}-#{session_id}", session.as(Session)
         end
       end
@@ -106,7 +113,7 @@ module Armature
         end
 
         def new?
-          cookie.nil?
+          cookie.nil? || data.empty?
         end
 
         private getter cookie : HTTP::Cookie? do

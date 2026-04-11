@@ -1,4 +1,3 @@
-require "http"
 require "./route"
 require "./component"
 require "./version"

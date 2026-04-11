@@ -4,10 +4,9 @@ require "http"
 require "../src/redis_session"
 
 redis = Redis::Client.new
-wrapped_redis = RedisWrapper.new(redis)
 session_store = Armature::Session::RedisStore.new(
   key: "armature-session",
-  redis: wrapped_redis,
+  redis: redis,
   expiration: 1.minute,
 )
 
@@ -37,7 +36,7 @@ describe Armature::Session::RedisStore do
     redis.get("armature-session-#{id}").should eq({user_id: "my-id"}.to_json)
   end
 
-  it "does not save a brand-new empty session" do
+  it "does not save a brand-new session" do
     id = UUID.random.to_s
     context = make_context(request_headers: HTTP::Headers{"Cookie" => "armature-session=#{id}"})
     session_store.call context
@@ -59,18 +58,4 @@ private def make_context(method = "GET", path = "/", request_body = nil, request
   )
 
   context
-end
-
-class RedisWrapper(T)
-  include Redis::Commands
-
-  getter commands = [] of Enumerable(String)
-
-  def initialize(@redis : T)
-  end
-
-  def run(command)
-    commands << command
-    @redis.run command
-  end
 end

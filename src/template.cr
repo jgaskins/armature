@@ -1,5 +1,10 @@
 require "html"
 
+# `Armature::Template` is very similar `ECR` (and is, in fact, derived from it),
+# but whereas `ECR` is designed to be flexible enough for any kind of output,
+# `Armature::Template` is specific to HTML. It supports automatic sanitization
+# for HTML output within `<%= ... %>` blocks, but allows raw output using
+# `<%== ... %>` blocks — note the `=` vs `==` distinction.
 module Armature::Template
   extend self
 
@@ -8,19 +13,19 @@ module Armature::Template
   # Defines a `to_s(io)` method whose body is the ECR contained
   # in *filename*, translated to Crystal code.
   #
-  # ```text
+  # ```html
   # # greeting.ecr
   # Hello <%= @name %>!
   # ```
   #
   # ```
-  # require "ecr/macros"
+  # require "armature/template"
   #
   # class Greeting
   #   def initialize(@name : String)
   #   end
   #
-  #   ECR.def_to_s "greeting.ecr"
+  #   Armature::Template.def_to_s "greeting.ecr"
   # end
   #
   # Greeting.new("World").to_s # => "Hello World!"
@@ -50,7 +55,7 @@ module Armature::Template
   # The generated code is the result of translating the contents of
   # the ECR file to Crystal, a program that appends to an IO.
   #
-  # ```text
+  # ```html
   # # greeting.ecr
   # Hello <%= name %>!
   # ```
@@ -61,15 +66,15 @@ module Armature::Template
   # name = "World"
   #
   # io = IO::Memory.new
-  # ECR.embed "greeting.ecr", io
+  # Armature::Template.embed "greeting.ecr", io
   # io.to_s # => "Hello World!"
   # ```
   #
-  # The `ECR.embed` line basically generates this Crystal code:
+  # The `Armature::Template.embed` line basically generates this Crystal code:
   #
   # ```
   # io << "Hello "
-  # io << name
+  # HTML.escape name, io
   # io << '!'
   # ```
   macro embed(filename, io_name)
@@ -81,7 +86,7 @@ module Armature::Template
   # The generated code is the result of translating the contents of
   # the ECR file to Crystal, a program that appends to an IO and returns a string.
   #
-  # ```text
+  # ```html
   # # greeting.ecr
   # Hello <%= name %>!
   # ```
@@ -91,16 +96,16 @@ module Armature::Template
   #
   # name = "World"
   #
-  # rendered = ECR.render "greeting.ecr"
+  # rendered = Armature::Template.render "greeting.ecr"
   # rendered # => "Hello World!"
   # ```
   #
-  # The `ECR.render` basically generates this Crystal code:
+  # The `Armature::Template.render` basically generates this Crystal code:
   #
   # ```
   # String.build do |io|
   #   io << "Hello "
-  #   io << name
+  #   HTML.escape name, io
   #   io << '!'
   # end
   # ```
@@ -110,6 +115,9 @@ module Armature::Template
     end
   end
 
+  # `Armature::Template` uses `HTML::SanitizableValue` and `HTML::SafeValue` to
+  # determine whether to perform HTML sanitization on Crystal expressions within
+  # `<%= ... %>` blocks.
   module HTML
     struct SanitizableValue(T)
       def initialize(@value : T)
@@ -143,10 +151,9 @@ module Armature::Template
   def process_string(string, filename, buffer_name = DefaultBufferName) : String
     lexer = Lexer.new string
     token = lexer.next_token
+    in_case_statement = false
 
     String.build do |str|
-      output_block_level = 0
-      sanitize_block_stack = [] of Bool
       while true
         case token.type
         in .string?
@@ -155,10 +162,13 @@ module Armature::Template
 
           string = suppress_leading_indentation(token, string)
 
-          str << buffer_name
-          str << " << "
-          string.inspect str
-          str << '\n'
+          # Support case statements
+          if string.presence || !in_case_statement
+            str << buffer_name
+            str << " << "
+            string.inspect str
+            str << '\n'
+          end
         in .output?
           string = token.value
           line_number = token.line_number
@@ -189,38 +199,30 @@ module Armature::Template
           token = lexer.next_token
 
           suppress_trailing_whitespace(token, suppress_trailing)
-          output_block_level += 1
-          str.puts "# begin output block"
           str << "#<loc:push>"
           append_loc(str, filename, line_number, column_number)
-          str << variable(output_block_level) << " = "
           # If they used <%|== safe_content do %>, we can just use that
           if string.starts_with? '='
-            str.puts "# safe"
             # Write all but the first byte to the buffer, but without allocating
             # another string to do it.
             str.write string.to_slice + 1
-            sanitize_block_stack << false
           else
             raise "HTML sanitization for block capture is not yet supported."
             str << string
-            sanitize_block_stack << true
           end
         in .end_output_block?
           string = token.value
           token = lexer.next_token
-          str.puts "# end output block"
           str.puts "#<loc:pop>"
           str.puts string
-          if sanitize_block_stack.pop
-            str << "::Armature::Template::HTML::SanitizableValue.new(" << variable(output_block_level) << ')'
-          else
-            str << variable(output_block_level)
-          end
-          output_block_level -= 1
           str << ".to_s " << buffer_name << '\n'
         in .control?
           string = token.value
+          # The `case` and `select` constructs have very similar syntax, so
+          # we'll treat them the same.
+          in_case_statement = string.lstrip.starts_with?("case ") ||
+                              string.strip == "case" ||
+                              string.strip == "select"
           line_number = token.line_number
           column_number = token.column_number
           suppress_trailing = token.suppress_trailing?
@@ -239,10 +241,6 @@ module Armature::Template
         end
       end
     end
-  end
-
-  private macro variable(name)
-    "{{name}}_#{{{name}}}"
   end
 
   private def suppress_leading_indentation(token, string)

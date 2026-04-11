@@ -14,9 +14,9 @@
 <script type="text/javascript" src="js/doc.js"></script>
 
   <meta name="repository-name" content="armature">
-  <title>armature 0.5.0</title>
+  <title>HTTP - armature 0.5.0</title>
   <script type="text/javascript">
-  CrystalDocs.base_path = "";
+    CrystalDocs.base_path = "";
   </script>
 </head>
 <body>
@@ -247,7 +247,7 @@
       
     </li>
   
-  <li class=" " data-id="armature/HTTP" data-name="http">
+  <li class=" current" data-id="armature/HTTP" data-name="http">
       <a href="HTTP.html">HTTP</a>
       
     </li>
@@ -259,141 +259,89 @@
 
 
 <div class="main-content">
-<h1><a id="armature" class="anchor" href="#armature">  <svg class="octicon-link" aria-hidden="true">
-    <use href="#octicon-link"/>
-  </svg>
-</a>Armature</h1>
-<p>Armature is an HTTP routing framework for Crystal.</p>
-<h2><a id="installation" class="anchor" href="#installation">
+<h1 class="type-name">
+
+  <span class="kind">
+    module
+  </span> HTTP
+
+</h1>
+
+
+
+
+
+  <h2>
+    <a id="overview" class="anchor" href="#overview">
   <svg class="octicon-link" aria-hidden="true">
     <use href="#octicon-link"/>
   </svg>
-</a>Installation</h2>
-<ol>
-<li>
-<p>Add the dependency to your <code>shard.yml</code>:</p>
-<pre><code class="language-yaml">dependencies:
-  armature:
-    github: jgaskins/armature</code></pre>
-</li>
-<li>
-<p>Run <code>shards install</code></p>
-</li>
-</ol>
-<h2><a id="usage" class="anchor" href="#usage">
+</a>
+    Overview
+  </h2>
+
+  <p>The HTTP module contains <code>HTTP::Client</code>, <code>HTTP::Server</code> and <code>HTTP::WebSocket</code> implementations.</p>
+<p><span class="flag purple">NOTE</span>  To use <code><a href="HTTP.html">HTTP</a></code>, you must explicitly import it with <code>require &quot;http&quot;</code></p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  <h2>
+    <a id="defined-in" class="anchor" href="#defined-in">
   <svg class="octicon-link" aria-hidden="true">
     <use href="#octicon-link"/>
   </svg>
-</a>Usage</h2>
-<p>Armature has 2 primary components:</p>
-<ul>
-<li><code><a href="Armature/Route.html">Armature::Route</a></code>
-<ul>
-<li>Provides a routing graph by allowing a top-level application to delegate to various child routes based on path segments</li>
-<li>Provides an <a href="https://crystal-lang.org/api/1.0.0/ECR.html">ECR</a> rendering macro to render view templates at compile time. View templates are under the <code>views/</code> directory in the application root.</li>
-<li>Provides a missed-match handler (<code>r.miss</code>) so you can provide custom 404 handling in a way that's simple and discoverable</li>
-</ul>
-</li>
-<li><code><a href="Armature/Session.html">Armature::Session</a></code>
-<ul>
-<li>If you're using cookie-based authentication, you can use Armature sessions to persist session data between requests</li>
-<li>Currently the only supported session adapter is <code><a href="Armature/Session/RedisStore.html">Armature::Session::RedisStore</a></code>. The value stored in the cookie is the session id and the data stored in Redis will be the session data serialized into a JSON string.</li>
-</ul>
-</li>
-</ul>
-<pre><code class="language-crystal"><span class="k">require</span> <span class="s">&quot;armature&quot;</span>
-<span class="k">require</span> <span class="s">&quot;armature/redis_session&quot;</span>
-<span class="k">require</span> <span class="s">&quot;redis&quot;</span>
+</a>
+    Defined in:
+  </h2>
+  
+    
+      <a href="https://github.com/jgaskins/armature/blob/v0.5.0/src/session.cr#L52" target="_blank">
+        session.cr
+      </a>
+    
+    <br/>
+  
 
-<span class="k">class</span> <span class="t">App</span>
-  <span class="k">include</span> <span class="t">HTTP</span><span class="t">::</span><span class="t">Handler</span>
-  <span class="k">include</span> <span class="t">Armature</span><span class="t">::</span><span class="t">Route</span>
 
-  <span class="k">def</span> <span class="m">call</span>(context)
-    route context <span class="k">do</span> <span class="o">|</span>r, response, session<span class="o">|</span>
-      <span class="c"># The `session` can be treated as a key/value object. All JSON-friendly</span>
-      <span class="c"># types can be stored and retrieved. The stored session data is saved as</span>
-      <span class="c"># JSON and parsed into a `JSON::Any`.</span>
-      <span class="k">if</span> current_user_id <span class="o">=</span> session[<span class="s">&quot;user_id&quot;</span>]?.try(<span class="o">&amp;</span>.as_i?)
-        current_user <span class="o">=</span> <span class="t">UserQuery</span>.new.find_by_id(current_user_id)
-      <span class="k">end</span>
 
-      <span class="c"># `render` macro provided by `Armature::Route` renders the given template</span>
-      <span class="c"># inside the `views/` directory to the `response` object. This example</span>
-      <span class="c"># renders `views/app_header.ecr`.</span>
-      <span class="c">#</span>
-      <span class="c"># Note: You can render as many templates as you need, allowing for nesting</span>
-      <span class="c"># your UI via nested routes.</span>
-      render <span class="s">&quot;app_header&quot;</span>
-      
-      <span class="c"># Root path (all HTTP verbs)</span>
-      r.root <span class="k">do</span>
-        <span class="c"># Execute the given block only for GET requests</span>
-        r.get { render <span class="s">&quot;homepage&quot;</span> }
 
-        <span class="c"># Execute the given block only for POST requests</span>
-        r.post <span class="k">do</span>
-          <span class="c"># ...</span>
-        <span class="k">end</span>
-      <span class="k">end</span>
 
-      <span class="c"># Delegate certain paths to other `Armature::Route`s with `on`</span>
-      r.on <span class="s">&quot;products&quot;</span> { <span class="t">Products</span>.new.call(context) }
+  
 
-      <span class="c"># Allow for authenticated-only routes</span>
-      <span class="k">if</span> current_user
-        r.on <span class="s">&quot;notifications&quot;</span> { <span class="t">Notifications</span>.new(current_user).call(context) }
-        r.on <span class="s">&quot;cart&quot;</span> { <span class="t">Cart</span>.new(current_user).call(context) }
-      <span class="k">end</span>
+  
 
-      <span class="c"># Execute a block if an endpoint has not been reached yet.</span>
-      r.miss <span class="k">do</span>
-        response.status <span class="o">=</span> <span class="n">:not_found</span>
-        render <span class="s">&quot;not_found&quot;</span>
-      <span class="k">end</span>
+  
 
-      <span class="c"># Rendering the footer below main app content</span>
-      render <span class="s">&quot;app_footer&quot;</span>
-    <span class="k">end</span>
-  <span class="k">end</span>
-<span class="k">end</span>
+  
 
-http <span class="o">=</span> <span class="t">HTTP</span><span class="t">::</span><span class="t">Server</span>.new([
-  <span class="t">Armature</span><span class="t">::</span><span class="t">Session</span><span class="t">::</span><span class="t">RedisStore</span>.new(
-    <span class="c"># the HTTP cookie name to store the session id in</span>
-    key: <span class="s">&quot;app_session&quot;</span>,
-    <span class="c"># a client for the Redis instance to store session data in</span>
-    redis: <span class="t">Redis</span><span class="t">::</span><span class="t">Client</span>.from_env(<span class="s">&quot;REDIS_URL&quot;</span>),
-  ),
-  <span class="t">App</span>.new,
-])
-http.listen <span class="n">8080</span></code></pre>
-<p>Other useful components are:</p>
-<ul>
-<li><code><a href="Armature/Form/Helper.html">Armature::Form::Helper</a></code></li>
-<li><code><a href="Armature/Cache.html">Armature::Cache</a></code></li>
-<li><code><a href="Armature/Component.html">Armature::Component</a></code></li>
-</ul>
-<h2><a id="contributing" class="anchor" href="#contributing">
-  <svg class="octicon-link" aria-hidden="true">
-    <use href="#octicon-link"/>
-  </svg>
-</a>Contributing</h2>
-<ol>
-<li>Fork it (<a href="https://github.com/jgaskins/armature/fork">https://github.com/jgaskins/armature/fork</a>)</li>
-<li>Create your feature branch (<code>git checkout -b my-new-feature</code>)</li>
-<li>Commit your changes (<code>git commit -am 'Add some feature'</code>)</li>
-<li>Push to the branch (<code>git push origin my-new-feature</code>)</li>
-<li>Create a new Pull Request</li>
-</ol>
-<h2><a id="contributors" class="anchor" href="#contributors">
-  <svg class="octicon-link" aria-hidden="true">
-    <use href="#octicon-link"/>
-  </svg>
-</a>Contributors</h2>
-<ul>
-<li><a href="https://github.com/jgaskins">Jamie Gaskins</a> - creator and maintainer</li>
-</ul>
+
+  <div class="methods-inherited">
+    
+  </div>
+
+  
+
+  
+
+  
+
+  
+
+
 </div>
+
 </body>
 </html>
