@@ -9,6 +9,11 @@ dependencies:
     github: jgaskins/redis
   msgpack:
     github: crystal-community/msgpack-crystal
+  lexbor:
+    github: kostya/lexbor
+  hot_topic:
+    github: jgaskins/hot_topic
+
 development_dependencies:
   armature:
     path: .
