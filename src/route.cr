@@ -79,7 +79,7 @@ module Armature
         {% end %}
       end
 
-      handle_method get, post, put, patch, delete
+      handle_method get, post, put, patch, delete, head, options, query
 
       def is(&)
         return if handled?
