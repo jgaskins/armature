@@ -39,7 +39,7 @@ jobs:
 
     steps:
     # Checks out your repository under $GITHUB_WORKSPACE
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v7
 
     # Sets up Crystal
     - name: Setup Crystal
